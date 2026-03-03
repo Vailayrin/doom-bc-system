@@ -1,0 +1,29 @@
+.doom-bc.sheet .sheet-header {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.doom-bc.sheet .profile-img {
+  width: 72px;
+  height: 72px;
+  object-fit: cover;
+  border: 1px solid #5e5e5e;
+}
+
+.doom-bc.sheet .header-fields {
+  flex: 1;
+}
+
+.doom-bc.sheet .sheet-tabs {
+  display: flex;
+  gap: 8px;
+  border-bottom: 1px solid #777;
+  margin-bottom: 8px;
+  padding-bottom: 6px;
+}
+
+.doom-bc.sheet .sheet-body {
+  min-height: 220px;
+}

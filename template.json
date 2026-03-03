@@ -1,0 +1,247 @@
+{
+  "Actor": {
+    "types": [
+      "pc",
+      "npc",
+      "vehicle"
+    ],
+    "templates": {
+      "characteristicsCore": {
+        "characteristics": {
+          "ws": { "initial": 0, "advances": 0, "modifier": 0, "unnatural": 0, "current": 0, "bonus": 0 },
+          "bs": { "initial": 0, "advances": 0, "modifier": 0, "unnatural": 0, "current": 0, "bonus": 0 },
+          "s": { "initial": 0, "advances": 0, "modifier": 0, "unnatural": 0, "current": 0, "bonus": 0 },
+          "t": { "initial": 0, "advances": 0, "modifier": 0, "unnatural": 0, "current": 0, "bonus": 0 },
+          "ag": { "initial": 0, "advances": 0, "modifier": 0, "unnatural": 0, "current": 0, "bonus": 0 },
+          "int": { "initial": 0, "advances": 0, "modifier": 0, "unnatural": 0, "current": 0, "bonus": 0 },
+          "per": { "initial": 0, "advances": 0, "modifier": 0, "unnatural": 0, "current": 0, "bonus": 0 },
+          "wp": { "initial": 0, "advances": 0, "modifier": 0, "unnatural": 0, "current": 0, "bonus": 0 },
+          "fel": { "initial": 0, "advances": 0, "modifier": 0, "unnatural": 0, "current": 0, "bonus": 0 },
+          "inf": { "initial": 0, "advances": 0, "modifier": 0, "current": 0, "bonus": 0 },
+          "cor": { "value": 0 }
+        }
+      },
+      "combatCore": {
+        "combat": {
+          "wounds": { "max": 0, "value": 0, "critical": 0, "criticalInjuries": [] },
+          "fatigue": { "max": 0, "value": 0 },
+          "fate": { "max": 0, "value": 0 },
+          "armourPoints": {
+            "head": 0,
+            "rightArm": 0,
+            "leftArm": 0,
+            "body": 0,
+            "rightLeg": 0,
+            "leftLeg": 0
+          },
+          "initiative": {
+            "die": "1d10",
+            "stat": "agBonus",
+            "flatBonus": 0,
+            "actorMod": 0
+          }
+        }
+      }
+    },
+    "pc": {
+      "templates": [
+        "characteristicsCore",
+        "combatCore"
+      ],
+      "identity": {
+        "homeworld": "",
+        "background": "",
+        "role": "",
+        "elite": "",
+        "divination": ""
+      },
+      "skills": {
+        "basic": [],
+        "specialistGroups": {
+          "commonLore": [],
+          "forbiddenLore": [],
+          "linguistics": [],
+          "navigate": [],
+          "operate": [],
+          "scholasticLore": [],
+          "trade": []
+        }
+      },
+      "traits": [],
+      "talents": [],
+      "gear": {
+        "encumbrance": { "current": 0, "max": 0 }
+      },
+      "psy": {
+        "psyRating": 0,
+        "powers": []
+      },
+      "technoWonders": {
+        "rating": 0,
+        "powers": []
+      },
+      "advancement": {
+        "experience": { "total": 0, "spent": 0, "available": 0 },
+        "corruption": { "points": 0, "malignancies": [], "mutations": [] },
+        "insanity": { "points": 0, "mentalDisorders": [] },
+        "aptitudes": []
+      }
+    },
+    "npc": {
+      "templates": [
+        "characteristicsCore",
+        "combatCore"
+      ],
+      "npcSubtype": "standard",
+      "identity": {
+        "classification": "",
+        "faction": "",
+        "threat": ""
+      },
+      "skills": {
+        "basic": [],
+        "specialistGroups": {
+          "commonLore": [],
+          "forbiddenLore": [],
+          "linguistics": [],
+          "navigate": [],
+          "operate": [],
+          "scholasticLore": [],
+          "trade": []
+        }
+      },
+      "traits": [],
+      "talents": [],
+      "gear": {
+        "encumbrance": { "current": 0, "max": 0 }
+      }
+    },
+    "vehicle": {
+      "nameplate": {
+        "class": "",
+        "manufacturer": "",
+        "designation": ""
+      },
+      "hull": {
+        "max": 0,
+        "value": 0
+      },
+      "crew": {
+        "min": 0,
+        "max": 0,
+        "current": 0
+      },
+      "movement": {
+        "type": "",
+        "speed": 0
+      },
+      "armourPoints": {
+        "front": 0,
+        "side": 0,
+        "rear": 0
+      },
+      "traits": [],
+      "talents": []
+    }
+  },
+  "Item": {
+    "types": [
+      "rangedWeapon",
+      "meleeWeapon",
+      "armour",
+      "ammunition",
+      "artifact",
+      "implant",
+      "grenade",
+      "talent",
+      "trait",
+      "psychicPower",
+      "technoWonder"
+    ],
+    "templates": {
+      "baseItem": {
+        "description": "",
+        "weight": 0,
+        "cost": 0
+      }
+    },
+    "rangedWeapon": {
+      "templates": [
+        "baseItem"
+      ],
+      "damage": "",
+      "penetration": 0,
+      "range": "",
+      "clip": 0,
+      "reload": ""
+    },
+    "meleeWeapon": {
+      "templates": [
+        "baseItem"
+      ],
+      "damage": "",
+      "penetration": 0,
+      "special": ""
+    },
+    "armour": {
+      "templates": [
+        "baseItem"
+      ],
+      "location": "",
+      "ap": 0
+    },
+    "ammunition": {
+      "templates": [
+        "baseItem"
+      ],
+      "ammoType": "",
+      "quantity": 0
+    },
+    "artifact": {
+      "templates": [
+        "baseItem"
+      ],
+      "effect": ""
+    },
+    "implant": {
+      "templates": [
+        "baseItem"
+      ],
+      "effect": ""
+    },
+    "grenade": {
+      "templates": [
+        "baseItem"
+      ],
+      "damage": "",
+      "penetration": 0,
+      "blast": 0
+    },
+    "talent": {
+      "templates": [
+        "baseItem"
+      ],
+      "tier": 1
+    },
+    "trait": {
+      "templates": [
+        "baseItem"
+      ],
+      "isPassive": true
+    },
+    "psychicPower": {
+      "templates": [
+        "baseItem"
+      ],
+      "warpCharge": 0,
+      "focusPower": ""
+    },
+    "technoWonder": {
+      "templates": [
+        "baseItem"
+      ],
+      "rating": 0,
+      "activation": ""
+    }
+  }
+}

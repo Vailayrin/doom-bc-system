@@ -1,0 +1,39 @@
+<form class="doom-bc-sheet" autocomplete="off">
+  <header class="sheet-header">
+    <img class="profile-img" src="{{actor.img}}" data-edit="img" title="{{actor.name}}" />
+    <div class="header-fields">
+      <h1><input name="name" type="text" value="{{actor.name}}" placeholder="{{localize 'DOOMBC.ActorName'}}" /></h1>
+      <p>{{localize "DOOMBC.ActorType.pc"}}</p>
+    </div>
+  </header>
+
+  <nav class="sheet-tabs tabs" data-group="primary">
+    <a class="item" data-tab="main">{{localize "DOOMBC.Tab.main"}}</a>
+    <a class="item" data-tab="combat">{{localize "DOOMBC.Tab.combat"}}</a>
+    <a class="item" data-tab="gear">{{localize "DOOMBC.Tab.gear"}}</a>
+    <a class="item" data-tab="psychic">{{localize "DOOMBC.Tab.psychic"}}</a>
+    <a class="item" data-tab="techno">{{localize "DOOMBC.Tab.techno"}}</a>
+    <a class="item" data-tab="advancement">{{localize "DOOMBC.Tab.advancement"}}</a>
+  </nav>
+
+  <section class="sheet-body">
+    <div class="tab" data-group="primary" data-tab="main">
+      <p>{{localize "DOOMBC.Placeholder.phase0"}}</p>
+    </div>
+    <div class="tab" data-group="primary" data-tab="combat">
+      <p>{{localize "DOOMBC.Placeholder.phase0"}}</p>
+    </div>
+    <div class="tab" data-group="primary" data-tab="gear">
+      <p>{{localize "DOOMBC.Placeholder.phase0"}}</p>
+    </div>
+    <div class="tab" data-group="primary" data-tab="psychic">
+      <p>{{localize "DOOMBC.Placeholder.phase0"}}</p>
+    </div>
+    <div class="tab" data-group="primary" data-tab="techno">
+      <p>{{localize "DOOMBC.Placeholder.phase0"}}</p>
+    </div>
+    <div class="tab" data-group="primary" data-tab="advancement">
+      <p>{{localize "DOOMBC.Placeholder.phase0"}}</p>
+    </div>
+  </section>
+</form>

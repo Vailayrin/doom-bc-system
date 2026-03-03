@@ -1,0 +1,14 @@
+{
+  "DOOMBC.ActorName": "Actor Name",
+  "DOOMBC.ItemName": "Item Name",
+  "DOOMBC.ActorType.pc": "PC",
+  "DOOMBC.ActorType.npc": "NPC",
+  "DOOMBC.ActorType.vehicle": "Vehicle",
+  "DOOMBC.Tab.main": "MAIN",
+  "DOOMBC.Tab.combat": "COMBAT",
+  "DOOMBC.Tab.gear": "GEAR",
+  "DOOMBC.Tab.psychic": "PSYCHIC POWERS",
+  "DOOMBC.Tab.techno": "TECHNO WONDERS",
+  "DOOMBC.Tab.advancement": "ADVANCEMENT",
+  "DOOMBC.Placeholder.phase0": "Phase 0: system scaffold is ready. Detailed mechanics will be added in later phases."
+}
