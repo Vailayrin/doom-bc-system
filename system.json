@@ -1,8 +1,8 @@
-{
-  "id": "doom-bc",
+﻿{
+  "id": "doom-bc-system",
   "title": "Doom BC System",
   "description": "Foundry VTT v13 game system for Doom BC.",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "authors": [
     {
       "name": "Doom BC Team"
@@ -12,6 +12,10 @@
     "minimum": "13",
     "verified": "13"
   },
+  "minimumCoreVersion": "13",
+  "compatibleCoreVersion": "13",
+  "manifest": "https://raw.githubusercontent.com/Vailayrin/doom-bc-system/main/system.json",
+  "download": "https://github.com/Vailayrin/doom-bc-system/archive/refs/heads/main.zip",
   "esmodules": [
     "scripts/doom-bc-system.js"
   ],
@@ -56,44 +60,46 @@
       "label": "Doom BC: Items",
       "path": "packs/items",
       "type": "Item",
-      "system": "doom-bc"
+      "system": "doom-bc-system"
     },
     {
       "name": "talents",
       "label": "Doom BC: Talents",
       "path": "packs/talents",
       "type": "Item",
-      "system": "doom-bc"
+      "system": "doom-bc-system"
     },
     {
       "name": "traits",
       "label": "Doom BC: Traits",
       "path": "packs/traits",
       "type": "Item",
-      "system": "doom-bc"
+      "system": "doom-bc-system"
     },
     {
       "name": "powers",
       "label": "Doom BC: Powers",
       "path": "packs/powers",
       "type": "Item",
-      "system": "doom-bc"
+      "system": "doom-bc-system"
     },
     {
       "name": "npc",
       "label": "Doom BC: NPC",
       "path": "packs/npc",
       "type": "Actor",
-      "system": "doom-bc"
+      "system": "doom-bc-system"
     },
     {
       "name": "vehicles",
       "label": "Doom BC: Vehicles",
       "path": "packs/vehicles",
       "type": "Actor",
-      "system": "doom-bc"
+      "system": "doom-bc-system"
     }
   ],
   "socket": false,
-  "initiative": "@system.combat.initiative.die + @system.combat.initiative.flatBonus + @system.combat.initiative.actorMod"
+  "initiative": "1d10 + @system.combat.initiative.flatBonus + @system.combat.initiative.actorMod"
 }
+
+
