@@ -1,8 +1,8 @@
-﻿{
+{
   "id": "doom-bc-system",
   "title": "Doom BC System",
   "description": "Foundry VTT v13 game system for Doom BC.",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "authors": [
     {
       "name": "Doom BC Team"
@@ -36,9 +36,15 @@
   ],
   "documentTypes": {
     "Actor": {
-      "pc": {},
-      "npc": {},
-      "vehicle": {}
+      "pc": {
+        "htmlFields": []
+      },
+      "npc": {
+        "htmlFields": []
+      },
+      "vehicle": {
+        "htmlFields": []
+      }
     },
     "Item": {
       "rangedWeapon": {},
