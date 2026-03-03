@@ -2,7 +2,7 @@
   "id": "doom-bc-system",
   "title": "Doom BC System",
   "description": "Foundry VTT v13 game system for Doom BC.",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "authors": [
     {
       "name": "Doom BC Team"
@@ -35,24 +35,24 @@
     }
   ],
   "documentTypes": {
-    "Actor": [
-      "pc",
-      "npc",
-      "vehicle"
-    ],
-    "Item": [
-      "rangedWeapon",
-      "meleeWeapon",
-      "armour",
-      "ammunition",
-      "artifact",
-      "implant",
-      "grenade",
-      "talent",
-      "trait",
-      "psychicPower",
-      "technoWonder"
-    ]
+    "Actor": {
+      "pc": {},
+      "npc": {},
+      "vehicle": {}
+    },
+    "Item": {
+      "rangedWeapon": {},
+      "meleeWeapon": {},
+      "armour": {},
+      "ammunition": {},
+      "artifact": {},
+      "implant": {},
+      "grenade": {},
+      "talent": {},
+      "trait": {},
+      "psychicPower": {},
+      "technoWonder": {}
+    }
   },
   "packs": [
     {
