@@ -8,17 +8,16 @@
     "templates": {
       "characteristicsCore": {
         "characteristics": {
-          "ws": { "initial": 0, "advances": 0, "modifier": 0, "unnatural": 0, "current": 0, "bonus": 0 },
-          "bs": { "initial": 0, "advances": 0, "modifier": 0, "unnatural": 0, "current": 0, "bonus": 0 },
-          "s": { "initial": 0, "advances": 0, "modifier": 0, "unnatural": 0, "current": 0, "bonus": 0 },
-          "t": { "initial": 0, "advances": 0, "modifier": 0, "unnatural": 0, "current": 0, "bonus": 0 },
-          "ag": { "initial": 0, "advances": 0, "modifier": 0, "unnatural": 0, "current": 0, "bonus": 0 },
-          "int": { "initial": 0, "advances": 0, "modifier": 0, "unnatural": 0, "current": 0, "bonus": 0 },
-          "per": { "initial": 0, "advances": 0, "modifier": 0, "unnatural": 0, "current": 0, "bonus": 0 },
-          "wp": { "initial": 0, "advances": 0, "modifier": 0, "unnatural": 0, "current": 0, "bonus": 0 },
-          "fel": { "initial": 0, "advances": 0, "modifier": 0, "unnatural": 0, "current": 0, "bonus": 0 },
-          "inf": { "initial": 0, "advances": 0, "modifier": 0, "current": 0, "bonus": 0 },
-          "cor": { "value": 0 }
+          "ws": { "initial": 0, "advances": 0, "modifier": 0, "unnatural": 0 },
+          "bs": { "initial": 0, "advances": 0, "modifier": 0, "unnatural": 0 },
+          "s": { "initial": 0, "advances": 0, "modifier": 0, "unnatural": 0 },
+          "t": { "initial": 0, "advances": 0, "modifier": 0, "unnatural": 0 },
+          "ag": { "initial": 0, "advances": 0, "modifier": 0, "unnatural": 0 },
+          "int": { "initial": 0, "advances": 0, "modifier": 0, "unnatural": 0 },
+          "per": { "initial": 0, "advances": 0, "modifier": 0, "unnatural": 0 },
+          "wp": { "initial": 0, "advances": 0, "modifier": 0, "unnatural": 0 },
+          "fel": { "initial": 0, "advances": 0, "modifier": 0, "unnatural": 0 },
+          "inf": { "initial": 0, "advances": 0, "modifier": 0, "unnatural": 0 }
         }
       },
       "combatCore": {
@@ -49,11 +48,14 @@
         "combatCore"
       ],
       "identity": {
-        "homeworld": "",
-        "background": "",
-        "role": "",
-        "elite": "",
-        "divination": ""
+        "homeworld": { "id": "", "value": "" },
+        "race": { "id": "", "value": "" },
+        "subrace": { "id": "", "value": "" },
+        "archetype": { "id": "", "value": "" },
+        "eliteArchetype": { "id": "", "value": "" },
+        "pride": { "id": "", "value": "" },
+        "motivation": { "id": "", "value": "" },
+        "shame": { "id": "", "value": "" }
       },
       "skills": {
         "basic": [],

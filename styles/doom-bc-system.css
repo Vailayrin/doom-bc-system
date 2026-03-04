@@ -27,3 +27,100 @@
 .doom-bc.sheet .sheet-body {
   min-height: 220px;
 }
+
+.doom-bc.sheet .identity-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px 12px;
+}
+
+.doom-bc.sheet .identity-grid .field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.doom-bc.sheet .identity-grid .field-wide {
+  grid-column: 1 / -1;
+}
+
+.doom-bc.sheet .characteristics-section {
+  margin-top: 14px;
+}
+
+.doom-bc.sheet .characteristics-section h2 {
+  margin: 0 0 8px;
+  font-size: 16px;
+}
+
+.doom-bc.sheet .characteristics-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.doom-bc.sheet .characteristics-table th,
+.doom-bc.sheet .characteristics-table td {
+  padding: 6px;
+  border: 1px solid #666;
+  text-align: center;
+}
+
+.doom-bc.sheet .characteristics-table td:first-child {
+  text-align: left;
+  min-width: 190px;
+}
+
+.doom-bc.sheet .characteristics-table input[type="number"] {
+  width: 100%;
+}
+
+.doom-bc.sheet .char-roll-button {
+  min-width: 48px;
+  margin-right: 8px;
+}
+
+.doom-bc.sheet .char-long-name {
+  font-size: 12px;
+  opacity: 0.8;
+}
+
+.doom-bc-roll-card {
+  padding: 8px;
+  border: 1px solid #6b6b6b;
+  border-left-width: 5px;
+  background: #f2f2f2;
+}
+
+.doom-bc-roll-card.success {
+  border-left-color: #1a8c34;
+}
+
+.doom-bc-roll-card.failure {
+  border-left-color: #b01a1a;
+}
+
+.doom-bc-roll-card.placeholder {
+  border-left-color: #3b67a8;
+}
+
+.doom-bc-roll-card .roll-title {
+  font-size: 15px;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.doom-bc-roll-card .roll-line {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 3px;
+}
+
+.doom-bc-roll-card .roll-result strong {
+  text-transform: uppercase;
+}
+
+.doom-bc-roll-card .roll-actions {
+  margin-top: 8px;
+  display: flex;
+  justify-content: flex-end;
+}

@@ -2,7 +2,7 @@
   "id": "doom-bc-system",
   "title": "Doom BC System",
   "description": "Foundry VTT v13 game system for Doom BC.",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "authors": [
     {
       "name": "Doom BC Team"
@@ -12,10 +12,8 @@
     "minimum": "13",
     "verified": "13"
   },
-  "minimumCoreVersion": "13",
-  "compatibleCoreVersion": "13",
   "manifest": "https://raw.githubusercontent.com/Vailayrin/doom-bc-system/main/system.json",
-  "download": "https://github.com/Vailayrin/doom-bc-system/archive/refs/heads/main.zip",
+  "download": "https://github.com/Vailayrin/doom-bc-system/releases/download/v0.0.3/doom-bc-system.zip",
   "esmodules": [
     "scripts/doom-bc-system.js"
   ],

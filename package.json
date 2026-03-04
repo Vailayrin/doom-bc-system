@@ -1,0 +1,22 @@
+{
+  "name": "doom-bc-system",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+"scripts": {
+  "test": "echo \"Error: no test specified\" && exit 1",
+  "deploy": "robocopy . \"C:\\Users\\user\\Desktop\\FoundryVTT\\Data\\systems\\doom-bc-system\" /MIR /XD node_modules .git"
+},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Vailayrin/doom-bc-system.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Vailayrin/doom-bc-system/issues"
+  },
+  "homepage": "https://github.com/Vailayrin/doom-bc-system#readme"
+}

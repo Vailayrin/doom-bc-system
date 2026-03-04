@@ -18,7 +18,90 @@
 
   <section class="sheet-body">
     <div class="tab" data-group="primary" data-tab="main">
-      <p>{{localize "DOOMBC.Placeholder.phase0"}}</p>
+      <section class="identity-grid">
+        {{#each identityFields as |field|}}
+          <label class="field">
+            <span>{{field.label}}</span>
+            <input type="text" name="system.identity.{{field.key}}.value" value="{{field.value}}" />
+            <input type="hidden" name="system.identity.{{field.key}}.id" value="{{field.id}}" />
+          </label>
+        {{/each}}
+      </section>
+
+      <section class="characteristics-section">
+        <h2>{{localize "DOOMBC.Characteristics.title"}}</h2>
+        <table class="characteristics-table">
+          <thead>
+            <tr>
+              <th>{{localize "DOOMBC.Characteristics.characteristic"}}</th>
+              <th>{{localize "DOOMBC.Characteristics.initial"}}</th>
+              <th>{{localize "DOOMBC.Characteristics.advances"}}</th>
+              <th>{{localize "DOOMBC.Characteristics.modifier"}}</th>
+              <th>{{localize "DOOMBC.Characteristics.current"}}</th>
+              <th>{{localize "DOOMBC.Characteristics.unnatural"}}</th>
+              <th>{{localize "DOOMBC.Characteristics.bonus"}}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {{#each characteristics as |char|}}
+              <tr data-characteristic="{{char.key}}">
+                <td>
+                  <button
+                    type="button"
+                    class="char-roll-button"
+                    data-action="roll-characteristic"
+                    data-characteristic="{{char.key}}">
+                    {{char.shortLabel}}
+                  </button>
+                  <span class="char-long-name">{{char.longLabel}}</span>
+                </td>
+                <td>
+                  <input
+                    type="number"
+                    name="system.characteristics.{{char.key}}.initial"
+                    value="{{char.initial}}"
+                    min="0"
+                    max="100"
+                    data-char-field="initial" />
+                </td>
+                <td>
+                  <input
+                    type="number"
+                    name="system.characteristics.{{char.key}}.advances"
+                    value="{{char.advances}}"
+                    min="0"
+                    max="100"
+                    data-char-field="advances" />
+                </td>
+                <td>
+                  <input
+                    type="number"
+                    name="system.characteristics.{{char.key}}.modifier"
+                    value="{{char.modifier}}"
+                    min="-100"
+                    max="100"
+                    data-char-field="modifier" />
+                </td>
+                <td>
+                  <input type="number" value="{{char.current}}" readonly data-derived="current" />
+                </td>
+                <td>
+                  <input
+                    type="number"
+                    name="system.characteristics.{{char.key}}.unnatural"
+                    value="{{char.unnatural}}"
+                    min="0"
+                    {{#unless @root.isGM}}readonly{{/unless}}
+                    data-char-field="unnatural" />
+                </td>
+                <td>
+                  <input type="number" value="{{char.bonus}}" readonly data-derived="bonus" />
+                </td>
+              </tr>
+            {{/each}}
+          </tbody>
+        </table>
+      </section>
     </div>
     <div class="tab" data-group="primary" data-tab="combat">
       <p>{{localize "DOOMBC.Placeholder.phase0"}}</p>
