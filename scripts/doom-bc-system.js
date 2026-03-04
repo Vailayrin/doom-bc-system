@@ -36,7 +36,8 @@ Hooks.on("renderChatMessage", (_message, html) => {
       characteristicKey,
       testName,
       finalModifier,
-      isReroll: true
+      isReroll: true,
+      canReroll: false
     });
   });
 });

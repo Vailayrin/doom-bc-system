@@ -8,16 +8,16 @@
     "templates": {
       "characteristicsCore": {
         "characteristics": {
-          "ws": { "initial": 0, "advances": 0, "modifier": 0, "unnatural": 0 },
-          "bs": { "initial": 0, "advances": 0, "modifier": 0, "unnatural": 0 },
-          "s": { "initial": 0, "advances": 0, "modifier": 0, "unnatural": 0 },
-          "t": { "initial": 0, "advances": 0, "modifier": 0, "unnatural": 0 },
-          "ag": { "initial": 0, "advances": 0, "modifier": 0, "unnatural": 0 },
-          "int": { "initial": 0, "advances": 0, "modifier": 0, "unnatural": 0 },
-          "per": { "initial": 0, "advances": 0, "modifier": 0, "unnatural": 0 },
-          "wp": { "initial": 0, "advances": 0, "modifier": 0, "unnatural": 0 },
-          "fel": { "initial": 0, "advances": 0, "modifier": 0, "unnatural": 0 },
-          "inf": { "initial": 0, "advances": 0, "modifier": 0, "unnatural": 0 }
+          "ws": { "initial": 0, "advances": 0, "modifier": 0, "unnatural": 0, "current": 0, "bonus": 0 },
+          "bs": { "initial": 0, "advances": 0, "modifier": 0, "unnatural": 0, "current": 0, "bonus": 0 },
+          "s": { "initial": 0, "advances": 0, "modifier": 0, "unnatural": 0, "current": 0, "bonus": 0 },
+          "t": { "initial": 0, "advances": 0, "modifier": 0, "unnatural": 0, "current": 0, "bonus": 0 },
+          "ag": { "initial": 0, "advances": 0, "modifier": 0, "unnatural": 0, "current": 0, "bonus": 0 },
+          "int": { "initial": 0, "advances": 0, "modifier": 0, "unnatural": 0, "current": 0, "bonus": 0 },
+          "per": { "initial": 0, "advances": 0, "modifier": 0, "unnatural": 0, "current": 0, "bonus": 0 },
+          "wp": { "initial": 0, "advances": 0, "modifier": 0, "unnatural": 0, "current": 0, "bonus": 0 },
+          "fel": { "initial": 0, "advances": 0, "modifier": 0, "unnatural": 0, "current": 0, "bonus": 0 },
+          "inf": { "initial": 0, "advances": 0, "modifier": 0, "unnatural": 0, "current": 0, "bonus": 0 }
         }
       },
       "combatCore": {
@@ -48,14 +48,24 @@
         "combatCore"
       ],
       "identity": {
-        "homeworld": { "id": "", "value": "" },
-        "race": { "id": "", "value": "" },
-        "subrace": { "id": "", "value": "" },
-        "archetype": { "id": "", "value": "" },
-        "eliteArchetype": { "id": "", "value": "" },
-        "pride": { "id": "", "value": "" },
-        "motivation": { "id": "", "value": "" },
-        "shame": { "id": "", "value": "" }
+        "homeworld": "",
+        "race": "",
+        "subrace": "",
+        "archetype": "",
+        "eliteArchetype": "",
+        "pride": "",
+        "motivation": "",
+        "shame": ""
+      },
+      "resources": {
+        "corruption": 0,
+        "insanity": 0,
+        "wounds": 0,
+        "fatigue": 0
+      },
+      "roll": {
+        "lastTestType": "basic",
+        "lastModifier": 0
       },
       "skills": {
         "basic": [],

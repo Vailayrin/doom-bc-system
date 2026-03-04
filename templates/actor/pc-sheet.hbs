@@ -22,8 +22,7 @@
         {{#each identityFields as |field|}}
           <label class="field">
             <span>{{field.label}}</span>
-            <input type="text" name="system.identity.{{field.key}}.value" value="{{field.value}}" />
-            <input type="hidden" name="system.identity.{{field.key}}.id" value="{{field.id}}" />
+            <input type="text" name="system.identity.{{field.key}}" value="{{field.value}}" />
           </label>
         {{/each}}
       </section>
@@ -91,7 +90,6 @@
                     name="system.characteristics.{{char.key}}.unnatural"
                     value="{{char.unnatural}}"
                     min="0"
-                    {{#unless @root.isGM}}readonly{{/unless}}
                     data-char-field="unnatural" />
                 </td>
                 <td>

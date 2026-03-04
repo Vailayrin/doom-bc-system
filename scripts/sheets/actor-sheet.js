@@ -42,16 +42,11 @@ function deriveCharacteristic(rawData = {}) {
   const initial = clampInt(rawData.initial ?? 0, 0, 100);
   const advances = clampInt(rawData.advances ?? 0, 0, 100);
   const modifier = clampInt(rawData.modifier ?? 0, -100, 100);
-  const unnatural = Math.max(toInt(rawData.unnatural ?? 0), 0);
+  const unnatural = Math.max(toInt(rawData.unnatural ?? 0, 0), 0);
   const current = Math.min(Math.max(initial + advances + modifier, 0), 100);
   const bonus = Math.floor(current / 10);
-  return { initial, advances, modifier, unnatural, current, bonus };
-}
-
-function identityIdFromValue(fieldKey, value) {
-  if (!value) return "";
-  const slug = foundry.utils.slugify(value, { strict: true });
-  return slug || `${fieldKey}-${foundry.utils.randomID(6)}`;
+  const extraSuccesses = Math.floor(unnatural / 2);
+  return { initial, advances, modifier, unnatural, current, bonus, extraSuccesses };
 }
 
 function difficultyLabel(modifier) {
@@ -102,15 +97,13 @@ export class DoomBCActorSheet extends ActorSheet {
   async getData(options) {
     const data = await super.getData(options);
     data.system = data.actor.system;
-    data.isGM = game.user.isGM;
     data.identityFields = IDENTITY_FIELDS.map((field) => {
-      const value = data.system.identity?.[field.key]?.value ?? "";
-      const id = data.system.identity?.[field.key]?.id ?? "";
+      const rawValue = data.system.identity?.[field.key];
+      const value = typeof rawValue === "string" ? rawValue : String(rawValue?.value ?? "");
       return {
         key: field.key,
         label: game.i18n.localize(field.i18nKey),
-        value,
-        id
+        value
       };
     });
     data.characteristics = CHARACTERISTICS.map((definition) => {
@@ -123,11 +116,6 @@ export class DoomBCActorSheet extends ActorSheet {
         ...derived
       };
     });
-    data.rollDifficultyOptions = buildDifficultyOptions();
-    data.testTypes = TEST_TYPES.map((type) => ({
-      value: type.value,
-      label: game.i18n.localize(type.i18nKey)
-    }));
     return data;
   }
 
@@ -139,19 +127,25 @@ export class DoomBCActorSheet extends ActorSheet {
 
   async _updateObject(_event, formData) {
     for (const field of IDENTITY_FIELDS) {
-      const valuePath = `system.identity.${field.key}.value`;
-      const idPath = `system.identity.${field.key}.id`;
-      const value = String(formData[valuePath] ?? "").trim();
-      formData[valuePath] = value;
-      formData[idPath] = identityIdFromValue(field.key, value);
+      const path = `system.identity.${field.key}`;
+      formData[path] = String(formData[path] ?? "").trim();
     }
 
     for (const charData of CHARACTERISTICS) {
       const basePath = `system.characteristics.${charData.key}`;
-      formData[`${basePath}.initial`] = clampInt(formData[`${basePath}.initial`], 0, 100);
-      formData[`${basePath}.advances`] = clampInt(formData[`${basePath}.advances`], 0, 100);
-      formData[`${basePath}.modifier`] = clampInt(formData[`${basePath}.modifier`], -100, 100);
-      formData[`${basePath}.unnatural`] = Math.max(toInt(formData[`${basePath}.unnatural`], 0), 0);
+      const initial = clampInt(formData[`${basePath}.initial`], 0, 100);
+      const advances = clampInt(formData[`${basePath}.advances`], 0, 100);
+      const modifier = clampInt(formData[`${basePath}.modifier`], -100, 100);
+      const unnatural = Math.max(toInt(formData[`${basePath}.unnatural`], 0), 0);
+      const current = Math.min(Math.max(initial + advances + modifier, 0), 100);
+      const bonus = Math.floor(current / 10);
+
+      formData[`${basePath}.initial`] = initial;
+      formData[`${basePath}.advances`] = advances;
+      formData[`${basePath}.modifier`] = modifier;
+      formData[`${basePath}.unnatural`] = unnatural;
+      formData[`${basePath}.current`] = current;
+      formData[`${basePath}.bonus`] = bonus;
     }
 
     await this.actor.update(formData);
@@ -221,7 +215,7 @@ export class DoomBCActorSheet extends ActorSheet {
             const customModifier = clampInt(html.find("[name='customModifier']").val(), -60, 60);
             const finalModifier = clampInt(difficulty + customModifier, -60, 60);
             const testType = String(html.find("[name='testType']").val() ?? "basic");
-            return { testName, difficulty, customModifier, finalModifier, testType };
+            return { testName, finalModifier, testType };
           }
         },
         cancel: {
@@ -233,6 +227,11 @@ export class DoomBCActorSheet extends ActorSheet {
 
     if (!dialogResult) return;
 
+    await this.actor.update({
+      "system.roll.lastTestType": dialogResult.testType,
+      "system.roll.lastModifier": dialogResult.finalModifier
+    });
+
     if (dialogResult.testType !== "basic") {
       await DoomBCActorSheet.createPlaceholderRollMessage(this.actor, dialogResult.testType, dialogResult.testName);
       return;
@@ -242,7 +241,8 @@ export class DoomBCActorSheet extends ActorSheet {
       actor: this.actor,
       characteristicKey,
       testName: dialogResult.testName,
-      finalModifier: dialogResult.finalModifier
+      finalModifier: dialogResult.finalModifier,
+      canReroll: true
     });
   }
 
@@ -267,22 +267,41 @@ export class DoomBCActorSheet extends ActorSheet {
     });
   }
 
-  static async rollCharacteristicTest({ actor, characteristicKey, testName, finalModifier = 0, isReroll = false }) {
+  static async rollCharacteristicTest({ actor, characteristicKey, testName, finalModifier = 0, isReroll = false, canReroll = true }) {
     const characteristic = deriveCharacteristic(actor.system.characteristics?.[characteristicKey] ?? {});
     const target = Math.min(Math.max(characteristic.current + toInt(finalModifier, 0), 0), 100);
     const roll = await (new Roll("1d100")).evaluate();
     const rollTotal = toInt(roll.total, 100);
-    const success = rollTotal <= target;
+    const isCriticalSuccess = rollTotal >= 1 && rollTotal <= 5;
+    const isCriticalFailure = rollTotal >= 96 && rollTotal <= 100;
+    const success = isCriticalSuccess ? true : (isCriticalFailure ? false : rollTotal <= target);
 
     const baseDegrees = success ? Math.floor((target - rollTotal) / 10) + 1 : 0;
-    const totalDegrees = success ? baseDegrees + characteristic.unnatural : 0;
+    const totalDegrees = success ? baseDegrees + characteristic.extraSuccesses : 0;
     const failureDegrees = success ? 0 : Math.floor((rollTotal - target) / 10) + 1;
 
-    const resultLabel = success ? game.i18n.localize("DOOMBC.Roll.success") : game.i18n.localize("DOOMBC.Roll.failure");
+    let resultLabel = success ? game.i18n.localize("DOOMBC.Roll.success") : game.i18n.localize("DOOMBC.Roll.failure");
+    if (isCriticalSuccess) resultLabel = game.i18n.localize("DOOMBC.Roll.criticalSuccess");
+    if (isCriticalFailure) resultLabel = game.i18n.localize("DOOMBC.Roll.criticalFailure");
+
     const degreesLabel = success ? game.i18n.localize("DOOMBC.Roll.degreesSuccess") : game.i18n.localize("DOOMBC.Roll.degreesFailure");
     const degreesValue = success ? totalDegrees : failureDegrees;
     const modifierLabel = toInt(finalModifier, 0);
     const safeTestName = foundry.utils.escapeHTML(testName);
+
+    const rerollButton = canReroll ? `
+      <div class="roll-actions">
+        <button
+          type="button"
+          class="doom-bc-reroll"
+          data-actor-id="${actor.id}"
+          data-characteristic="${characteristicKey}"
+          data-test-name="${safeTestName}"
+          data-final-modifier="${modifierLabel}">
+          ${game.i18n.localize("DOOMBC.Roll.reroll")}
+        </button>
+      </div>
+    ` : "";
 
     const content = `
       <div class="doom-bc-roll-card ${success ? "success" : "failure"}">
@@ -293,18 +312,8 @@ export class DoomBCActorSheet extends ActorSheet {
         <div class="roll-line roll-result"><span>${game.i18n.localize("DOOMBC.Roll.result")}:</span> <strong>${resultLabel}</strong></div>
         <div class="roll-line"><span>${degreesLabel}:</span> <strong>${degreesValue}</strong></div>
         ${success ? `<div class="roll-line"><span>${game.i18n.localize("DOOMBC.Roll.baseDegrees")}:</span> <strong>${baseDegrees}</strong></div>` : ""}
-        ${success ? `<div class="roll-line"><span>${game.i18n.localize("DOOMBC.Roll.unnatural")}:</span> <strong>+${characteristic.unnatural}</strong></div>` : ""}
-        <div class="roll-actions">
-          <button
-            type="button"
-            class="doom-bc-reroll"
-            data-actor-id="${actor.id}"
-            data-characteristic="${characteristicKey}"
-            data-test-name="${safeTestName}"
-            data-final-modifier="${modifierLabel}">
-            ${game.i18n.localize("DOOMBC.Roll.reroll")}
-          </button>
-        </div>
+        ${success ? `<div class="roll-line"><span>${game.i18n.localize("DOOMBC.Roll.extraSuccesses")}:</span> <strong>+${characteristic.extraSuccesses}</strong></div>` : ""}
+        ${rerollButton}
       </div>
     `;
 
