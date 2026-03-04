@@ -2,7 +2,7 @@
   "id": "doom-bc-system",
   "title": "Doom BC System",
   "description": "Foundry VTT v13 game system for Doom BC.",
-  "version": "0.0.5",
+  "version": "0.0.7",
   "authors": [
     {
       "name": "Doom BC Team"

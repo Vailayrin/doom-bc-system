@@ -21,7 +21,7 @@
       <section class="identity-matrix">
         <table class="sheet-table">
           <tr>
-            <td><label>{{localize "DOOMBC.ActorName"}} <input type="text" name="name" value="{{actor.name}}" /></label></td>
+            <td><label>{{localize "DOOMBC.ActorName"}} <input type="text" value="{{actor.name}}" readonly /></label></td>
             <td><label>{{localize "DOOMBC.Identity.homeworld"}} <input type="text" name="system.identity.homeworld" value="{{system.identity.homeworld}}" /></label></td>
           </tr>
           <tr>
@@ -35,7 +35,7 @@
         </table>
       </section>
 
-      <section class="layout-top-grid">
+      <section class="layout-main-grid">
         <section class="sheet-panel panel-characteristics">
           <h2>{{localize "DOOMBC.Characteristics.title"}}</h2>
           <table class="characteristics-table">
@@ -66,36 +66,47 @@
           </table>
         </section>
 
-        <section class="sheet-panel panel-traits">
-          <div class="panel-header">
-            <h2>Traits</h2>
-            {{#if hasOwner}}<button type="button" data-action="create-item" data-item-type="trait">+</button>{{/if}}
-          </div>
-          <table class="compact-table">
-            <thead>
-              <tr><th>Name</th><th>Level</th><th></th></tr>
-            </thead>
-            <tbody>
-              {{#if traitItems.length}}
-                {{#each traitItems as |trait|}}
-                  <tr>
-                    <td>{{trait.name}}</td>
-                    <td>{{trait.system.level}}</td>
-                    <td class="actions-cell">
-                      <button type="button" data-action="edit-item" data-item-id="{{trait.id}}">Edit</button>
-                      <button type="button" data-action="delete-item" data-item-id="{{trait.id}}">Del</button>
-                    </td>
-                  </tr>
-                {{/each}}
-              {{else}}
-                <tr><td colspan="3">No traits</td></tr>
-              {{/if}}
-            </tbody>
-          </table>
+        <section class="layout-right-stack">
+          <section class="sheet-panel panel-traits">
+            <div class="panel-header">
+              <h2>Traits</h2>
+              {{#if hasOwner}}<button type="button" data-action="create-item" data-item-type="trait">+</button>{{/if}}
+            </div>
+            <table class="compact-table">
+              <thead>
+                <tr><th>Name</th><th>Level</th><th></th></tr>
+              </thead>
+              <tbody>
+                {{#if traitItems.length}}
+                  {{#each traitItems as |trait|}}
+                    <tr>
+                      <td>
+                        <button type="button" class="trait-name-button" data-action="toggle-trait-description" data-item-id="{{trait.id}}">
+                          {{trait.name}}
+                        </button>
+                      </td>
+                      <td>{{trait.system.rating}}</td>
+                      <td class="actions-cell">
+                        <button type="button" data-action="edit-item" data-item-id="{{trait.id}}">Edit</button>
+                        <button type="button" class="icon-delete-button" data-action="delete-item" data-item-id="{{trait.id}}" title="Delete trait" aria-label="Delete trait">
+                          <i class="fas fa-trash"></i>
+                        </button>
+                      </td>
+                    </tr>
+                    <tr class="trait-description-row" data-desc-for="{{trait.id}}">
+                      <td colspan="3">{{trait.system.description}}</td>
+                    </tr>
+                  {{/each}}
+                {{else}}
+                  <tr><td colspan="3">No traits</td></tr>
+                {{/if}}
+              </tbody>
+            </table>
+          </section>
         </section>
       </section>
 
-      <section class="layout-bottom-grid">
+      <section class="layout-lower-grid">
         <section class="sheet-panel panel-talents">
           <div class="panel-header">
             <h2>Talents</h2>
@@ -128,18 +139,23 @@
           <h2>Basic Skills</h2>
           <table class="compact-table">
             <thead>
-              <tr><th>Name</th><th>Adv.</th><th>Char.</th><th>Total</th></tr>
+              <tr><th>Name</th><th>Adv.</th><th>Char.</th><th>Bonus</th><th>Total</th></tr>
             </thead>
             <tbody>
               {{#each basicSkills as |skill|}}
                 <tr>
                   <td>{{skill.name}}<input type="hidden" name="system.skills.basic.{{skill.index}}.name" value="{{skill.name}}" /></td>
-                  <td><input type="number" name="system.skills.basic.{{skill.index}}.advances" value="{{skill.advances}}" min="0" /></td>
+                  <td>
+                    <select name="system.skills.basic.{{skill.index}}.advances">
+                      {{selectOptions @root.basicSkillAdvanceOptions selected=skill.advances nameAttr="value" labelAttr="label"}}
+                    </select>
+                  </td>
                   <td>
                     <select name="system.skills.basic.{{skill.index}}.characteristic">
                       {{selectOptions @root.characteristicOptions selected=skill.characteristic nameAttr="key" labelAttr="label"}}
                     </select>
                   </td>
+                  <td><input type="number" name="system.skills.basic.{{skill.index}}.bonus" value="{{skill.bonus}}" /></td>
                   <td><input type="number" value="{{skill.total}}" readonly /></td>
                 </tr>
               {{/each}}
@@ -149,38 +165,40 @@
 
         <section class="sheet-panel panel-specialist-skills">
           <h2>Specialist Skills</h2>
-          {{#each specialistCategories as |cat|}}
-            <div class="specialist-group">
-              <div class="panel-header">
-                <h3>{{cat.label}}</h3>
-                {{#if @root.hasOwner}}<button type="button" data-action="add-specialist-skill" data-category="{{cat.key}}">+</button>{{/if}}
-              </div>
-              <table class="compact-table">
-                <thead>
-                  <tr><th>Name</th><th>Adv.</th><th>Char.</th><th>Total</th><th></th></tr>
-                </thead>
-                <tbody>
-                  {{#if cat.entries.length}}
-                    {{#each cat.entries as |entry|}}
-                      <tr>
-                        <td><input type="text" name="system.skills.specialistGroups.{{cat.key}}.{{entry.index}}.name" value="{{entry.name}}" /></td>
-                        <td><input type="number" name="system.skills.specialistGroups.{{cat.key}}.{{entry.index}}.advances" value="{{entry.advances}}" min="0" /></td>
-                        <td>
-                          <select name="system.skills.specialistGroups.{{cat.key}}.{{entry.index}}.characteristic">
-                            {{selectOptions @root.characteristicOptions selected=entry.characteristic nameAttr="key" labelAttr="label"}}
-                          </select>
-                        </td>
-                        <td><input type="number" value="{{entry.total}}" readonly /></td>
-                        <td>{{#if @root.hasOwner}}<button type="button" data-action="remove-specialist-skill" data-category="{{cat.key}}" data-index="{{entry.index}}">Del</button>{{/if}}</td>
-                      </tr>
-                    {{/each}}
-                  {{else}}
-                    <tr><td colspan="5">No entries</td></tr>
-                  {{/if}}
-                </tbody>
-              </table>
-            </div>
-          {{/each}}
+          <table class="compact-table specialist-table">
+            <thead>
+              <tr><th>Name</th><th>Adv.</th><th>Char.</th><th>Bonus</th><th>Total</th><th></th></tr>
+            </thead>
+            <tbody>
+              {{#each specialistCategories as |cat|}}
+                <tr class="specialist-category-row">
+                  <td class="specialist-category-name">{{cat.label}}</td>
+                  <td colspan="4"></td>
+                  <td>{{#if @root.hasOwner}}<button type="button" data-action="add-specialist-skill" data-category="{{cat.key}}">+</button>{{/if}}</td>
+                </tr>
+                {{#if cat.entries.length}}
+                  {{#each cat.entries as |entry|}}
+                    <tr>
+                      <td><input type="text" name="system.skills.specialistGroups.{{cat.key}}.{{entry.index}}.name" value="{{entry.name}}" /></td>
+                      <td>
+                        <select name="system.skills.specialistGroups.{{cat.key}}.{{entry.index}}.advances">
+                          {{selectOptions @root.basicSkillAdvanceOptions selected=entry.advances nameAttr="value" labelAttr="label"}}
+                        </select>
+                      </td>
+                      <td>
+                        <select name="system.skills.specialistGroups.{{cat.key}}.{{entry.index}}.characteristic">
+                          {{selectOptions @root.characteristicOptions selected=entry.characteristic nameAttr="key" labelAttr="label"}}
+                        </select>
+                      </td>
+                      <td><input type="number" name="system.skills.specialistGroups.{{cat.key}}.{{entry.index}}.bonus" value="{{entry.bonus}}" /></td>
+                      <td><input type="number" value="{{entry.total}}" readonly /></td>
+                      <td>{{#if @root.hasOwner}}<button type="button" data-action="remove-specialist-skill" data-category="{{cat.key}}" data-index="{{entry.index}}">Del</button>{{/if}}</td>
+                    </tr>
+                  {{/each}}
+                {{/if}}
+              {{/each}}
+            </tbody>
+          </table>
         </section>
       </section>
     </div>

@@ -2,12 +2,66 @@
   <header class="sheet-header">
     <img class="profile-img" src="{{item.img}}" data-edit="img" title="{{item.name}}" />
     <div class="header-fields">
-      <h1><input name="name" type="text" value="{{item.name}}" placeholder="{{localize 'DOOMBC.ItemName'}}" /></h1>
+      {{#if isTrait}}
+        <h1>{{item.name}}</h1>
+      {{else}}
+        <h1><input name="name" type="text" value="{{item.name}}" placeholder="{{localize 'DOOMBC.ItemName'}}" /></h1>
+      {{/if}}
       <p>{{item.type}}</p>
     </div>
   </header>
 
   <section class="sheet-body">
-    <p>{{localize "DOOMBC.Placeholder.phase0"}}</p>
+    {{#if isTrait}}
+      <section class="sheet-panel">
+        <table class="compact-table">
+          <tbody>
+            <tr>
+              <th>Name</th>
+              <td><input type="text" name="name" value="{{item.name}}" /></td>
+            </tr>
+            <tr>
+              <th>Rating</th>
+              <td><input type="number" name="system.rating" value="{{system.rating}}" min="0" /></td>
+            </tr>
+            <tr>
+              <th>Description</th>
+              <td><textarea name="system.description" rows="6">{{system.description}}</textarea></td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="sheet-panel trait-effects-panel" style="margin-top: 8px;">
+        <div class="panel-header trait-effects-header">
+          <h2>Active Effects</h2>
+          <button type="button" class="small-plus-btn" data-action="create-effect">+</button>
+        </div>
+        <table class="compact-table">
+          <thead>
+            <tr><th>Label</th><th>Mode</th><th>Changes</th><th></th></tr>
+          </thead>
+          <tbody>
+            {{#if effects.length}}
+              {{#each effects as |effect|}}
+                <tr>
+                  <td>{{effect.label}}</td>
+                  <td>{{#if effect.transfer}}Transfer{{else}}Local{{/if}}</td>
+                  <td>{{effect.changeCount}}</td>
+                  <td class="actions-cell">
+                    <button type="button" data-action="edit-effect" data-effect-id="{{effect.id}}">Edit</button>
+                    <button type="button" data-action="delete-effect" data-effect-id="{{effect.id}}">Del</button>
+                  </td>
+                </tr>
+              {{/each}}
+            {{else}}
+              <tr><td colspan="4">No active effects</td></tr>
+            {{/if}}
+          </tbody>
+        </table>
+      </section>
+    {{else}}
+      <p>{{localize "DOOMBC.Placeholder.phase0"}}</p>
+    {{/if}}
   </section>
 </form>

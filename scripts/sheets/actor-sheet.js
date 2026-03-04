@@ -32,6 +32,13 @@ const BASIC_SKILL_NAMES = [
   "Psyniscience", "Scrutiny", "Security", "Sleight of Hand", "Stealth", "Survival", "Tech Use"
 ];
 
+const BASIC_SKILL_ADVANCE_OPTIONS = [
+  { value: 0, label: "+0" },
+  { value: 1, label: "+10" },
+  { value: 2, label: "+20" },
+  { value: 3, label: "+30" }
+];
+
 const SPECIALIST_CATEGORY_META = [
   { key: "commonLore", label: "Common Lore" },
   { key: "forbiddenLore", label: "Forbidden Lore" },
@@ -51,13 +58,21 @@ function clampInt(value, min, max) {
   return Math.min(Math.max(toInt(value, min), min), max);
 }
 
+function normalizeIndexedCollection(raw) {
+  if (Array.isArray(raw)) return raw;
+  if (!raw || typeof raw !== "object") return [];
+  return Object.keys(raw)
+    .sort((a, b) => toInt(a, 0) - toInt(b, 0))
+    .map((key) => raw[key]);
+}
+
 function deriveCharacteristic(rawData = {}) {
   const initial = clampInt(rawData.initial ?? 0, 0, 100);
   const advances = clampInt(rawData.advances ?? 0, 0, 100);
   const modifier = clampInt(rawData.modifier ?? 0, -100, 100);
   const unnatural = Math.max(toInt(rawData.unnatural ?? 0, 0), 0);
   const current = Math.min(Math.max(initial + advances + modifier, 0), 100);
-  const bonus = Math.floor(current / 10);
+  const bonus = Math.floor(current / 10) + unnatural;
   const extraSuccesses = Math.floor(unnatural / 2);
   return { initial, advances, modifier, unnatural, current, bonus, extraSuccesses };
 }
@@ -85,9 +100,10 @@ function buildDifficultyOptions() {
   return options;
 }
 
-function skillTotal(characteristicsByKey, characteristicKey, advances) {
+function skillTotal(characteristicsByKey, characteristicKey, advances, bonus) {
   const charCurrent = characteristicsByKey[characteristicKey]?.current ?? 0;
-  return clampInt(charCurrent + (toInt(advances, 0) * 10), 0, 200);
+  const total = charCurrent + (toInt(advances, 0) * 10) + toInt(bonus, 0);
+  return clampInt(total, -200, 300);
 }
 
 export class DoomBCActorSheet extends ActorSheet {
@@ -138,39 +154,60 @@ export class DoomBCActorSheet extends ActorSheet {
     const characteristicsByKey = {};
     for (const characteristic of data.characteristics) characteristicsByKey[characteristic.key] = characteristic;
 
-    const basicSkillMap = new Map((data.system.skills?.basic ?? []).map((entry) => [entry?.name, entry]));
+    const basicSkillSource = normalizeIndexedCollection(data.system.skills?.basic ?? []);
+    const basicSkillMap = new Map(basicSkillSource.map((entry) => [entry?.name, entry]));
     data.basicSkills = BASIC_SKILL_NAMES.map((name, index) => {
       const stored = basicSkillMap.get(name) ?? {};
       const characteristic = CHARACTERISTICS.some((charData) => charData.key === stored.characteristic) ? stored.characteristic : "ag";
-      const advances = Math.max(toInt(stored.advances ?? 0, 0), 0);
+      const advances = clampInt(stored.advances ?? 0, 0, 3);
+      const bonus = clampInt(stored.bonus ?? 0, -200, 200);
       return {
         index,
         name,
         characteristic,
         advances,
-        total: skillTotal(characteristicsByKey, characteristic, advances)
+        bonus,
+        total: skillTotal(characteristicsByKey, characteristic, advances, bonus)
       };
     });
 
     data.specialistCategories = SPECIALIST_CATEGORY_META.map((category) => {
-      const entries = (data.system.skills?.specialistGroups?.[category.key] ?? []).map((entry, index) => {
+      const specialistSource = normalizeIndexedCollection(data.system.skills?.specialistGroups?.[category.key] ?? []);
+      const entries = specialistSource.map((entry, index) => {
         const skillName = String(entry?.name ?? "").trim();
         const characteristic = CHARACTERISTICS.some((charData) => charData.key === entry?.characteristic) ? entry.characteristic : "int";
-        const advances = Math.max(toInt(entry?.advances ?? 0, 0), 0);
+        const advances = clampInt(entry?.advances ?? 0, 0, 3);
+        const bonus = clampInt(entry?.bonus ?? 0, -200, 200);
         return {
           index,
           name: skillName,
           characteristic,
           advances,
-          total: skillTotal(characteristicsByKey, characteristic, advances)
+          bonus,
+          total: skillTotal(characteristicsByKey, characteristic, advances, bonus)
         };
       });
       return { ...category, entries };
     });
 
     data.characteristicOptions = CHARACTERISTICS.map((charData) => ({ key: charData.key, label: charData.shortLabel }));
-    data.traitItems = this.actor.items.filter((item) => item.type === "trait").sort((a, b) => a.name.localeCompare(b.name));
-    data.talentItems = this.actor.items.filter((item) => item.type === "talent").sort((a, b) => a.name.localeCompare(b.name));
+    data.basicSkillAdvanceOptions = BASIC_SKILL_ADVANCE_OPTIONS;
+    data.traitItems = this.actor.items
+      .filter((item) => item.type === "trait")
+      .sort((a, b) => a.name.localeCompare(b.name))
+      .map((item) => ({
+        id: item.id,
+        name: item.name,
+        system: item.system
+      }));
+    data.talentItems = this.actor.items
+      .filter((item) => item.type === "talent")
+      .sort((a, b) => a.name.localeCompare(b.name))
+      .map((item) => ({
+        id: item.id,
+        name: item.name,
+        system: item.system
+      }));
     data.hasOwner = this.actor.isOwner;
     return data;
   }
@@ -182,6 +219,7 @@ export class DoomBCActorSheet extends ActorSheet {
     html.find("[data-action='create-item']").on("click", this._onCreateItem.bind(this));
     html.find("[data-action='edit-item']").on("click", this._onEditItem.bind(this));
     html.find("[data-action='delete-item']").on("click", this._onDeleteItem.bind(this));
+    html.find("[data-action='toggle-trait-description']").on("click", this._onToggleTraitDescription.bind(this));
     html.find("[data-action='add-specialist-skill']").on("click", this._onAddSpecialistSkill.bind(this));
     html.find("[data-action='remove-specialist-skill']").on("click", this._onRemoveSpecialistSkill.bind(this));
   }
@@ -199,7 +237,7 @@ export class DoomBCActorSheet extends ActorSheet {
       const modifier = clampInt(formData[`${basePath}.modifier`], -100, 100);
       const unnatural = Math.max(toInt(formData[`${basePath}.unnatural`], 0), 0);
       const current = Math.min(Math.max(initial + advances + modifier, 0), 100);
-      const bonus = Math.floor(current / 10);
+      const bonus = Math.floor(current / 10) + unnatural;
 
       formData[`${basePath}.initial`] = initial;
       formData[`${basePath}.advances`] = advances;
@@ -240,7 +278,9 @@ export class DoomBCActorSheet extends ActorSheet {
   _onEditItem(event) {
     event.preventDefault();
     const itemId = event.currentTarget.dataset.itemId;
+    if (!itemId) return;
     const item = this.actor.items.get(itemId);
+    if (!item) return;
     item?.sheet?.render(true);
   }
 
@@ -251,12 +291,21 @@ export class DoomBCActorSheet extends ActorSheet {
     await this.actor.deleteEmbeddedDocuments("Item", [itemId]);
   }
 
+  _onToggleTraitDescription(event) {
+    event.preventDefault();
+    const itemId = event.currentTarget.dataset.itemId;
+    if (!itemId) return;
+    const row = this.element?.find(`tr[data-desc-for='${itemId}']`)?.get(0);
+    if (!row) return;
+    row.classList.toggle("is-open");
+  }
+
   async _onAddSpecialistSkill(event) {
     event.preventDefault();
     const category = event.currentTarget.dataset.category;
     if (!SPECIALIST_CATEGORY_META.some((meta) => meta.key === category)) return;
     const current = foundry.utils.deepClone(this.actor.system.skills?.specialistGroups?.[category] ?? []);
-    current.push({ name: "", advances: 0, characteristic: "int" });
+    current.push({ name: "", advances: 0, characteristic: "int", bonus: 0 });
     await this.actor.update({ [`system.skills.specialistGroups.${category}`]: current });
   }
 

@@ -1,5 +1,7 @@
 import { DoomBCActorSheet } from "./sheets/actor-sheet.js";
 import { DoomBCItemSheet } from "./sheets/item-sheet.js";
+import { generateTraits } from "./traitGenerator.js";
+import { importTraits } from "./importTraits.js";
 
 const CHARACTERISTIC_KEYS = ["ws", "bs", "s", "t", "ag", "int", "per", "wp", "fel", "inf"];
 const IDENTITY_KEYS = ["homeworld", "race", "subrace", "archetype", "eliteArchetype", "pride", "motivation", "shame"];
@@ -29,6 +31,9 @@ Hooks.once("init", () => {
 });
 
 Hooks.once("ready", async () => {
+  globalThis.generateTraits = generateTraits;
+  globalThis.importTraits = importTraits;
+
   const updates = [];
 
   for (const actor of game.actors) {

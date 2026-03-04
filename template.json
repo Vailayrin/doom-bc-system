@@ -239,7 +239,9 @@
       "templates": [
         "baseItem"
       ],
-      "isPassive": true
+      "traitType": "rule",
+      "rating": 0,
+      "description": ""
     },
     "psychicPower": {
       "templates": [
