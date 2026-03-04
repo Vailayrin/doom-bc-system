@@ -16,7 +16,10 @@ const IDENTITY_FIELDS = [
   { key: "race", i18nKey: "DOOMBC.Identity.background" },
   { key: "subrace", i18nKey: "DOOMBC.Identity.role" },
   { key: "archetype", i18nKey: "DOOMBC.Identity.elite" },
-  { key: "eliteArchetype", i18nKey: "DOOMBC.Identity.divination" }
+  { key: "eliteArchetype", i18nKey: "DOOMBC.Identity.divination" },
+  { key: "pride", i18nKey: "DOOMBC.Identity.pride" },
+  { key: "motivation", i18nKey: "DOOMBC.Identity.motivation" },
+  { key: "shame", i18nKey: "DOOMBC.Identity.shame" }
 ];
 
 const TEST_TYPES = [
@@ -48,6 +51,47 @@ const SPECIALIST_CATEGORY_META = [
   { key: "scholasticLore", label: "Scholastic Lore" },
   { key: "trade", label: "Trade" }
 ];
+
+const APTITUDE_OPTIONS = [
+  "WS", "BS", "S", "T", "A", "I", "P", "W", "F",
+  "Off", "Fin", "Def", "Knw", "FC", "Psy", "Soc", "Gen", "Tec"
+];
+const ACTOR_APTITUDE_OPTIONS = ["Off", "Fin", "Def", "Knw", "FC", "Psy", "Soc", "Gen", "Tec"];
+
+const TALENT_APTITUDE_FIRST_OPTIONS = ["Off", "Fin", "Def", "Knw", "FC", "Psy", "Soc", "Gen", "Tec"];
+const TALENT_APTITUDE_SECOND_OPTIONS = ["Off", "Fin", "Def", "Knw", "FC", "Psy", "Soc", "Gen", "Tec"];
+
+const CHARACTERISTIC_APTITUDES = {
+  ws: ["WS", "Off"],
+  bs: ["BS", "Fin"],
+  s: ["S", "Off"],
+  t: ["T", "Def"],
+  ag: ["A", "Fin"],
+  int: ["I", "Knw"],
+  per: ["P", "FC"],
+  wp: ["W", "Psy"],
+  fel: ["F", "Soc"],
+  inf: ["Gen", "Soc"]
+};
+
+const CHARACTERISTIC_XP_COSTS = {
+  allied: { 5: 100, 10: 250, 15: 500, 20: 750, 25: 1000 },
+  neutral: { 5: 250, 10: 500, 15: 750, 20: 1000, 25: 1500 },
+  opposed: { 5: 500, 10: 750, 15: 1000, 20: 1500, 25: 2500 }
+};
+
+const SKILL_XP_COSTS = {
+  allied: { 0: 100, 1: 200, 2: 350, 3: 550 },
+  neutral: { 0: 200, 1: 350, 2: 500, 3: 750 },
+  opposed: { 0: 300, 1: 500, 2: 700, 3: 900 }
+};
+
+const TALENT_XP_COSTS = {
+  allied: { 1: 150, 2: 300, 3: 400 },
+  neutral: { 1: 250, 2: 500, 3: 750 },
+  opposed: { 1: 400, 2: 750, 3: 1000 }
+};
+const ACTOR_APTITUDE_FIELDS = ["slot1", "slot2", "slot3", "slot4", "slot5", "slot6", "slot7", "slot8", "slot9"];
 
 function toInt(value, fallback = 0) {
   const parsed = Number.parseInt(value, 10);
@@ -106,6 +150,51 @@ function skillTotal(characteristicsByKey, characteristicKey, advances, bonus) {
   return clampInt(total, -200, 300);
 }
 
+function normalizeAptitude(value, fallback = "Gen") {
+  const asString = String(value ?? "").trim();
+  return APTITUDE_OPTIONS.includes(asString) ? asString : fallback;
+}
+
+function relationFromMatches(matches) {
+  if (matches >= 2) return "allied";
+  if (matches === 1) return "neutral";
+  return "opposed";
+}
+
+function relationLabel(relation) {
+  if (relation === "allied") return "Allied";
+  if (relation === "neutral") return "Neutral";
+  return "Opposed";
+}
+
+function calculateAptitudeRelation(actorAptitudes, targetAptitudes) {
+  const actorSet = new Set(actorAptitudes.map((apt) => normalizeAptitude(apt, "Gen")));
+  const targetSet = new Set(targetAptitudes.map((apt) => normalizeAptitude(apt, "Gen")));
+  let matches = 0;
+  for (const aptitude of targetSet) {
+    if (actorSet.has(aptitude)) matches += 1;
+  }
+  const relation = relationFromMatches(matches);
+  return { matches, relation, relationLabel: relationLabel(relation) };
+}
+
+function characteristicAptitudes(key) {
+  return CHARACTERISTIC_APTITUDES[key] ?? ["Gen", "Gen"];
+}
+
+function characteristicAdvanceStep(advances) {
+  const next = Math.min(Math.max((Math.floor(toInt(advances, 0) / 5) + 1) * 5, 5), 25);
+  return next;
+}
+
+function skillAptitudes(characteristicKey, storedAptitudes = {}) {
+  const [firstFromChar] = characteristicAptitudes(characteristicKey);
+  return {
+    first: normalizeAptitude(storedAptitudes?.first, firstFromChar),
+    second: normalizeAptitude(storedAptitudes?.second, "Gen")
+  };
+}
+
 export class DoomBCActorSheet extends ActorSheet {
   static get defaultOptions() {
     return foundry.utils.mergeObject(super.defaultOptions, {
@@ -131,6 +220,16 @@ export class DoomBCActorSheet extends ActorSheet {
   async getData(options) {
     const data = await super.getData(options);
     data.system = data.actor.system;
+    data.aptitudeOptions = ACTOR_APTITUDE_OPTIONS.map((value) => ({ value, label: value }));
+    const actorAptitudes = ACTOR_APTITUDE_FIELDS.map((field, index) => {
+      const fallback = index === 0 ? normalizeAptitude(data.system.aptitudes?.primary, "Gen")
+        : (index === 1 ? normalizeAptitude(data.system.aptitudes?.secondary, "Gen") : "Gen");
+      return normalizeAptitude(data.system.aptitudes?.[field], fallback);
+    });
+    data.actorAptitudes = ACTOR_APTITUDE_FIELDS.map((field, index) => ({
+      field,
+      value: actorAptitudes[index]
+    }));
     data.identityFields = IDENTITY_FIELDS.map((field) => {
       const rawValue = data.system.identity?.[field.key];
       const value = typeof rawValue === "string" ? rawValue : String(rawValue?.value ?? "");
@@ -143,10 +242,17 @@ export class DoomBCActorSheet extends ActorSheet {
     data.characteristics = CHARACTERISTICS.map((definition) => {
       const raw = data.system.characteristics?.[definition.key] ?? {};
       const derived = deriveCharacteristic(raw);
+      const aptitudes = characteristicAptitudes(definition.key);
+      const relationData = calculateAptitudeRelation(actorAptitudes, aptitudes);
+      const nextAdvance = characteristicAdvanceStep(derived.advances);
       return {
         key: definition.key,
         shortLabel: definition.shortLabel,
         longLabel: game.i18n.localize(definition.i18nKey),
+        aptitudes,
+        relation: relationData.relationLabel,
+        xpCost: CHARACTERISTIC_XP_COSTS[relationData.relation][nextAdvance] ?? "-",
+        nextAdvanceLabel: `+${nextAdvance}`,
         ...derived
       };
     });
@@ -161,13 +267,18 @@ export class DoomBCActorSheet extends ActorSheet {
       const characteristic = CHARACTERISTICS.some((charData) => charData.key === stored.characteristic) ? stored.characteristic : "ag";
       const advances = clampInt(stored.advances ?? 0, 0, 3);
       const bonus = clampInt(stored.bonus ?? 0, -200, 200);
+      const aptitudes = skillAptitudes(characteristic, stored.aptitudes);
+      const relationData = calculateAptitudeRelation(actorAptitudes, [aptitudes.first, aptitudes.second]);
       return {
         index,
         name,
         characteristic,
         advances,
         bonus,
-        total: skillTotal(characteristicsByKey, characteristic, advances, bonus)
+        total: skillTotal(characteristicsByKey, characteristic, advances, bonus),
+        aptitudes,
+        relation: relationData.relationLabel,
+        xpCost: SKILL_XP_COSTS[relationData.relation][advances] ?? "-"
       };
     });
 
@@ -178,13 +289,19 @@ export class DoomBCActorSheet extends ActorSheet {
         const characteristic = CHARACTERISTICS.some((charData) => charData.key === entry?.characteristic) ? entry.characteristic : "int";
         const advances = clampInt(entry?.advances ?? 0, 0, 3);
         const bonus = clampInt(entry?.bonus ?? 0, -200, 200);
+        const aptitudes = skillAptitudes(characteristic, entry?.aptitudes);
+        const relationData = calculateAptitudeRelation(actorAptitudes, [aptitudes.first, aptitudes.second]);
         return {
           index,
+          categoryKey: category.key,
           name: skillName,
           characteristic,
           advances,
           bonus,
-          total: skillTotal(characteristicsByKey, characteristic, advances, bonus)
+          total: skillTotal(characteristicsByKey, characteristic, advances, bonus),
+          aptitudes,
+          relation: relationData.relationLabel,
+          xpCost: SKILL_XP_COSTS[relationData.relation][advances] ?? "-"
         };
       });
       return { ...category, entries };
@@ -203,11 +320,47 @@ export class DoomBCActorSheet extends ActorSheet {
     data.talentItems = this.actor.items
       .filter((item) => item.type === "talent")
       .sort((a, b) => a.name.localeCompare(b.name))
-      .map((item) => ({
-        id: item.id,
-        name: item.name,
-        system: item.system
-      }));
+      .map((item) => {
+        const tier = clampInt(item.system?.tier ?? 1, 1, 3);
+        const first = normalizeAptitude(item.system?.aptitudes?.first, "Gen");
+        const second = normalizeAptitude(item.system?.aptitudes?.second, "Gen");
+        const relationData = calculateAptitudeRelation(actorAptitudes, [first, second]);
+        return {
+          id: item.id,
+          name: item.name,
+          system: item.system,
+          tier,
+          aptitudes: { first, second },
+          relation: relationData.relationLabel,
+          xpCost: TALENT_XP_COSTS[relationData.relation][tier] ?? "-"
+        };
+      });
+    data.advancementData = {
+      characteristics: data.characteristics.map((charData) => ({
+        label: charData.shortLabel,
+        relation: charData.relation,
+        xpCost: charData.xpCost,
+        step: charData.nextAdvanceLabel
+      })),
+      basicSkills: data.basicSkills.map((skill) => ({
+        label: skill.name,
+        relation: skill.relation,
+        xpCost: skill.xpCost,
+        advance: `+${toInt(skill.advances, 0) * 10}`
+      })),
+      specialistSkills: data.specialistCategories.flatMap((category) => category.entries.map((entry) => ({
+        label: entry.name || category.label,
+        relation: entry.relation,
+        xpCost: entry.xpCost,
+        advance: `+${toInt(entry.advances, 0) * 10}`
+      }))),
+      talents: data.talentItems.map((talent) => ({
+        label: talent.name,
+        relation: talent.relation,
+        xpCost: talent.xpCost,
+        tier: talent.tier
+      }))
+    };
     data.hasOwner = this.actor.isOwner;
     return data;
   }
@@ -220,11 +373,16 @@ export class DoomBCActorSheet extends ActorSheet {
     html.find("[data-action='edit-item']").on("click", this._onEditItem.bind(this));
     html.find("[data-action='delete-item']").on("click", this._onDeleteItem.bind(this));
     html.find("[data-action='toggle-trait-description']").on("click", this._onToggleTraitDescription.bind(this));
+    html.find("[data-action='toggle-talent-description']").on("click", this._onToggleTraitDescription.bind(this));
     html.find("[data-action='add-specialist-skill']").on("click", this._onAddSpecialistSkill.bind(this));
     html.find("[data-action='remove-specialist-skill']").on("click", this._onRemoveSpecialistSkill.bind(this));
   }
 
   async _updateObject(_event, formData) {
+    for (const field of ACTOR_APTITUDE_FIELDS) {
+      formData[`system.aptitudes.${field}`] = normalizeAptitude(formData[`system.aptitudes.${field}`], "Gen");
+    }
+
     for (const field of IDENTITY_FIELDS) {
       const path = `system.identity.${field.key}`;
       formData[path] = String(formData[path] ?? "").trim();
@@ -245,6 +403,37 @@ export class DoomBCActorSheet extends ActorSheet {
       formData[`${basePath}.unnatural`] = unnatural;
       formData[`${basePath}.current`] = current;
       formData[`${basePath}.bonus`] = bonus;
+    }
+
+    for (let index = 0; index < BASIC_SKILL_NAMES.length; index += 1) {
+      const characteristicPath = `system.skills.basic.${index}.characteristic`;
+      const aptitudeFirstPath = `system.skills.basic.${index}.aptitudes.first`;
+      const aptitudeSecondPath = `system.skills.basic.${index}.aptitudes.second`;
+      const characteristicKey = String(formData[characteristicPath] ?? "ag");
+      const [firstFromCharacteristic] = characteristicAptitudes(characteristicKey);
+      formData[aptitudeFirstPath] = firstFromCharacteristic;
+      formData[aptitudeSecondPath] = normalizeAptitude(formData[aptitudeSecondPath], "Gen");
+    }
+
+    const specialistKeys = Object.keys(formData);
+    for (const category of SPECIALIST_CATEGORY_META) {
+      const prefix = `system.skills.specialistGroups.${category.key}.`;
+      const indices = new Set();
+      for (const key of specialistKeys) {
+        if (!key.startsWith(prefix)) continue;
+        const remainder = key.slice(prefix.length);
+        const index = toInt(remainder.split(".")[0], -1);
+        if (index >= 0) indices.add(index);
+      }
+      for (const index of indices) {
+        const characteristicPath = `${prefix}${index}.characteristic`;
+        const aptitudeFirstPath = `${prefix}${index}.aptitudes.first`;
+        const aptitudeSecondPath = `${prefix}${index}.aptitudes.second`;
+        const characteristicKey = String(formData[characteristicPath] ?? "int");
+        const [firstFromCharacteristic] = characteristicAptitudes(characteristicKey);
+        formData[aptitudeFirstPath] = firstFromCharacteristic;
+        formData[aptitudeSecondPath] = normalizeAptitude(formData[aptitudeSecondPath], "Gen");
+      }
     }
 
     await this.actor.update(formData);
@@ -304,8 +493,8 @@ export class DoomBCActorSheet extends ActorSheet {
     event.preventDefault();
     const category = event.currentTarget.dataset.category;
     if (!SPECIALIST_CATEGORY_META.some((meta) => meta.key === category)) return;
-    const current = foundry.utils.deepClone(this.actor.system.skills?.specialistGroups?.[category] ?? []);
-    current.push({ name: "", advances: 0, characteristic: "int", bonus: 0 });
+    const current = normalizeIndexedCollection(this.actor.system.skills?.specialistGroups?.[category] ?? []);
+    current.push({ name: "", advances: 0, characteristic: "int", bonus: 0, aptitudes: { first: "I", second: "Gen" } });
     await this.actor.update({ [`system.skills.specialistGroups.${category}`]: current });
   }
 
@@ -314,7 +503,7 @@ export class DoomBCActorSheet extends ActorSheet {
     const category = event.currentTarget.dataset.category;
     const index = toInt(event.currentTarget.dataset.index, -1);
     if (!SPECIALIST_CATEGORY_META.some((meta) => meta.key === category) || index < 0) return;
-    const current = foundry.utils.deepClone(this.actor.system.skills?.specialistGroups?.[category] ?? []);
+    const current = normalizeIndexedCollection(this.actor.system.skills?.specialistGroups?.[category] ?? []);
     if (index >= current.length) return;
     current.splice(index, 1);
     await this.actor.update({ [`system.skills.specialistGroups.${category}`]: current });

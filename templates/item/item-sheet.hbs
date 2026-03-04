@@ -5,7 +5,11 @@
       {{#if isTrait}}
         <h1>{{item.name}}</h1>
       {{else}}
-        <h1><input name="name" type="text" value="{{item.name}}" placeholder="{{localize 'DOOMBC.ItemName'}}" /></h1>
+        {{#if isTalent}}
+          <h1>{{item.name}}</h1>
+        {{else}}
+          <h1><input name="name" type="text" value="{{item.name}}" placeholder="{{localize 'DOOMBC.ItemName'}}" /></h1>
+        {{/if}}
       {{/if}}
       <p>{{item.type}}</p>
     </div>
@@ -31,37 +35,53 @@
           </tbody>
         </table>
       </section>
-
-      <section class="sheet-panel trait-effects-panel" style="margin-top: 8px;">
-        <div class="panel-header trait-effects-header">
-          <h2>Active Effects</h2>
-          <button type="button" class="small-plus-btn" data-action="create-effect">+</button>
-        </div>
-        <table class="compact-table">
-          <thead>
-            <tr><th>Label</th><th>Mode</th><th>Changes</th><th></th></tr>
-          </thead>
-          <tbody>
-            {{#if effects.length}}
-              {{#each effects as |effect|}}
-                <tr>
-                  <td>{{effect.label}}</td>
-                  <td>{{#if effect.transfer}}Transfer{{else}}Local{{/if}}</td>
-                  <td>{{effect.changeCount}}</td>
-                  <td class="actions-cell">
-                    <button type="button" data-action="edit-effect" data-effect-id="{{effect.id}}">Edit</button>
-                    <button type="button" data-action="delete-effect" data-effect-id="{{effect.id}}">Del</button>
-                  </td>
-                </tr>
-              {{/each}}
-            {{else}}
-              <tr><td colspan="4">No active effects</td></tr>
-            {{/if}}
-          </tbody>
-        </table>
-      </section>
     {{else}}
-      <p>{{localize "DOOMBC.Placeholder.phase0"}}</p>
+      {{#if isTalent}}
+        <section class="sheet-panel">
+          <table class="compact-table">
+            <tbody>
+              <tr>
+                <th>Aptitude 1</th>
+                <td>
+                  <select name="system.aptitudes.first">
+                    {{selectOptions talentAptitudeFirstOptions selected=system.aptitudes.first nameAttr="value" labelAttr="label"}}
+                  </select>
+                </td>
+              </tr>
+              <tr>
+                <th>Aptitude 2</th>
+                <td>
+                  <select name="system.aptitudes.second">
+                    {{selectOptions talentAptitudeSecondOptions selected=system.aptitudes.second nameAttr="value" labelAttr="label"}}
+                  </select>
+                </td>
+              </tr>
+              <tr>
+                <th>Tier</th>
+                <td>
+                  <select name="system.tier">
+                    {{selectOptions talentTierOptions selected=system.tier nameAttr="value" labelAttr="label"}}
+                  </select>
+                </td>
+              </tr>
+              <tr>
+                <th>God</th>
+                <td><input type="text" name="system.god" value="{{system.god}}" placeholder="Неделимый" /></td>
+              </tr>
+              <tr>
+                <th>Requirements</th>
+                <td><input type="text" name="system.requirements" value="{{system.requirements}}" placeholder="Нет" /></td>
+              </tr>
+              <tr>
+                <th>Description</th>
+                <td><textarea name="system.description" rows="6">{{system.description}}</textarea></td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+      {{else}}
+        <p>{{localize "DOOMBC.Placeholder.phase0"}}</p>
+      {{/if}}
     {{/if}}
   </section>
 </form>

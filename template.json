@@ -47,6 +47,17 @@
         "characteristicsCore",
         "combatCore"
       ],
+      "aptitudes": {
+        "slot1": "Gen",
+        "slot2": "Gen",
+        "slot3": "Gen",
+        "slot4": "Gen",
+        "slot5": "Gen",
+        "slot6": "Gen",
+        "slot7": "Gen",
+        "slot8": "Gen",
+        "slot9": "Gen"
+      },
       "identity": {
         "homeworld": "",
         "race": "",
@@ -233,7 +244,15 @@
       "templates": [
         "baseItem"
       ],
-      "tier": 1
+      "aptitudes": {
+        "first": "Gen",
+        "second": "Gen"
+      },
+      "tier": 1,
+      "requirements": "",
+      "god": "",
+      "category": "",
+      "specializations": ""
     },
     "trait": {
       "templates": [
@@ -259,3 +278,4 @@
     }
   }
 }
+

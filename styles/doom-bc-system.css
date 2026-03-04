@@ -73,7 +73,19 @@
   grid-template-columns: 1fr 1fr 1fr;
   gap: 12px;
   margin-bottom: 12px;
-  align-items: stretch;
+  align-items: start;
+}
+
+.doom-bc.sheet .panel-aptitudes {
+  grid-column: 1 / -1;
+  width: 100%;
+  padding: 4px 6px 6px;
+  box-sizing: border-box;
+}
+
+.doom-bc.sheet .panel-aptitudes .panel-header {
+  justify-content: center;
+  padding: 4px 0 6px;
 }
 
 .doom-bc.sheet .panel-characteristics {
@@ -86,6 +98,7 @@
   gap: 0;
   align-content: stretch;
   grid-column: 3;
+  grid-row: 2;
   height: 100%;
 }
 
@@ -195,6 +208,31 @@
   margin: 0;
 }
 
+.doom-bc.sheet .aptitudes-controls {
+  display: grid;
+  grid-template-columns: repeat(9, minmax(0, 1fr));
+  gap: 6px;
+  width: 100%;
+  margin: 0 auto;
+  box-sizing: border-box;
+  justify-items: center;
+  align-items: center;
+}
+
+.doom-bc.sheet .aptitudes-controls select {
+  width: 100%;
+  min-width: 0;
+  text-align: center;
+  text-align-last: center;
+}
+
+.doom-bc.sheet .aptitudes-title {
+  font-size: 24px;
+  line-height: 1;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
 .doom-bc.sheet.item .trait-effects-header {
   display: grid;
   grid-template-columns: 1fr auto 1fr;
@@ -231,15 +269,6 @@
   font-size: 14px;
 }
 
-.doom-bc.sheet .specialist-table .specialist-category-row td {
-  font-weight: 700;
-  text-transform: uppercase;
-}
-
-.doom-bc.sheet .specialist-table .specialist-category-name {
-  text-align: center;
-}
-
 .doom-bc.sheet .compact-table td input,
 .doom-bc.sheet .compact-table td select {
   width: 100%;
@@ -250,34 +279,58 @@
   resize: vertical;
 }
 
-.doom-bc.sheet .panel-basic-skills .compact-table,
-.doom-bc.sheet .panel-specialist-skills .compact-table {
+.doom-bc.sheet .panel-basic-skills .compact-table {
   table-layout: fixed;
 }
 
 .doom-bc.sheet .panel-basic-skills .compact-table th:nth-child(2),
-.doom-bc.sheet .panel-basic-skills .compact-table td:nth-child(2),
+.doom-bc.sheet .panel-basic-skills .compact-table td:nth-child(2) {
+  width: 74px;
+}
+
+.doom-bc.sheet .panel-basic-skills .compact-table th:nth-child(3),
+.doom-bc.sheet .panel-basic-skills .compact-table td:nth-child(3) {
+  width: 56px;
+}
+
+.doom-bc.sheet .panel-basic-skills .compact-table th:nth-child(4),
+.doom-bc.sheet .panel-basic-skills .compact-table td:nth-child(4) {
+  width: 44px;
+}
+
+.doom-bc.sheet .panel-basic-skills .compact-table th:nth-child(5),
+.doom-bc.sheet .panel-basic-skills .compact-table td:nth-child(5) {
+  width: 40px;
+}
+
+.doom-bc.sheet .specialist-table .specialist-category-row td {
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.doom-bc.sheet .specialist-table .specialist-category-name {
+  text-align: center;
+}
+
+.doom-bc.sheet .panel-specialist-skills .compact-table {
+  table-layout: fixed;
+}
+
 .doom-bc.sheet .panel-specialist-skills .compact-table th:nth-child(2),
 .doom-bc.sheet .panel-specialist-skills .compact-table td:nth-child(2) {
   width: 74px;
 }
 
-.doom-bc.sheet .panel-basic-skills .compact-table th:nth-child(3),
-.doom-bc.sheet .panel-basic-skills .compact-table td:nth-child(3),
 .doom-bc.sheet .panel-specialist-skills .compact-table th:nth-child(3),
 .doom-bc.sheet .panel-specialist-skills .compact-table td:nth-child(3) {
   width: 56px;
 }
 
-.doom-bc.sheet .panel-basic-skills .compact-table th:nth-child(4),
-.doom-bc.sheet .panel-basic-skills .compact-table td:nth-child(4),
 .doom-bc.sheet .panel-specialist-skills .compact-table th:nth-child(4),
 .doom-bc.sheet .panel-specialist-skills .compact-table td:nth-child(4) {
   width: 44px;
 }
 
-.doom-bc.sheet .panel-basic-skills .compact-table th:nth-child(5),
-.doom-bc.sheet .panel-basic-skills .compact-table td:nth-child(5),
 .doom-bc.sheet .panel-specialist-skills .compact-table th:nth-child(5),
 .doom-bc.sheet .panel-specialist-skills .compact-table td:nth-child(5) {
   width: 40px;
@@ -285,19 +338,154 @@
 
 .doom-bc.sheet .panel-specialist-skills .compact-table th:nth-child(6),
 .doom-bc.sheet .panel-specialist-skills .compact-table td:nth-child(6) {
-  width: 36px;
+  width: 52px;
+  text-align: center;
+}
+
+.doom-bc.sheet .panel-specialist-skills .compact-table td:nth-child(1) input[type="text"] {
+  width: 100%;
+  min-width: 0;
+}
+
+.doom-bc.sheet .panel-specialist-skills .specialist-name-input {
+  width: 100%;
+  min-width: 0;
+}
+
+.doom-bc.sheet .panel-specialist-skills .specialist-name-row td,
+.doom-bc.sheet .panel-specialist-skills .specialist-values-row td {
+  padding: 2px 4px;
+}
+
+.doom-bc.sheet .panel-specialist-skills .specialist-values-grid {
+  display: grid;
+  grid-template-columns: 74px 56px 44px 40px 52px;
+  gap: 6px;
+  justify-content: start;
+  align-items: center;
+}
+
+.doom-bc.sheet .panel-specialist-skills .specialist-values-grid select,
+.doom-bc.sheet .panel-specialist-skills .specialist-values-grid input {
+  width: 100%;
+  min-width: 0;
+}
+
+.doom-bc.sheet .panel-specialist-skills .specialist-values-grid button {
+  width: 52px;
+  min-width: 52px;
+}
+
+.doom-bc.sheet .panel-specialist-skills .compact-table th:nth-child(1),
+.doom-bc.sheet .panel-specialist-skills .compact-table td:nth-child(1) {
+  width: auto;
+}
+
+.doom-bc.sheet .panel-specialist-skills .compact-table td:nth-child(6) button {
+  width: 48px;
+  min-width: 48px;
+}
+
+.doom-bc.sheet .panel-talents .compact-table th:nth-child(2),
+.doom-bc.sheet .panel-talents .compact-table td:nth-child(2) {
+  width: 48px;
+}
+
+.doom-bc.sheet .panel-talents .compact-table th:nth-child(3),
+.doom-bc.sheet .panel-talents .compact-table td:nth-child(3) {
+  width: 104px;
 }
 
 .doom-bc.sheet .actions-cell {
   white-space: nowrap;
+  text-align: right;
 }
 
-.doom-bc.sheet .icon-delete-button {
-  width: 24px;
-  height: 24px;
-  padding: 0;
+.doom-bc.sheet .panel-traits .actions-cell {
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  gap: 4px;
+}
+
+.doom-bc.sheet .panel-traits .actions-cell .trait-delete-button,
+.doom-bc.sheet .panel-traits .actions-cell .trait-edit-button {
+  margin: 0;
+}
+
+.doom-bc.sheet .panel-traits .actions-cell .trait-edit-button {
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: 2px 8px;
+}
+
+.doom-bc.sheet .panel-traits .actions-cell .trait-delete-button {
+  flex: 0 0 28px;
+  width: 28px;
+  height: auto;
+  padding: 2px 0;
   display: inline-grid;
   place-items: center;
+  font-size: 14px;
+  line-height: 1;
+}
+
+.doom-bc.sheet .panel-talents .actions-cell {
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  gap: 4px;
+}
+
+.doom-bc.sheet .panel-talents .actions-cell .talent-delete-button {
+  flex: 0 0 28px;
+  width: 28px;
+  height: auto;
+  padding: 2px 0;
+  display: inline-grid;
+  place-items: center;
+  font-size: 14px;
+  line-height: 1;
+}
+
+.doom-bc.sheet .panel-talents .actions-cell .talent-edit-button {
+  flex: 1 1 auto;
+  min-width: 0;
+  margin: 0;
+  box-sizing: border-box;
+  border: 0;
+  box-shadow: none;
+  background: #d9d9d9;
+}
+
+.doom-bc.sheet .panel-talents .actions-cell .talent-delete-button {
+  border: 0;
+  box-shadow: none;
+  background: #d9d9d9;
+}
+
+.doom-bc.sheet .talent-name-button {
+  width: 100%;
+  border: 0;
+  background: transparent;
+  text-align: left;
+  padding: 0;
+  cursor: pointer;
+}
+
+.doom-bc.sheet .talent-description-row {
+  display: none;
+}
+
+.doom-bc.sheet .talent-description-row.is-open {
+  display: table-row;
+}
+
+.doom-bc.sheet .talent-description-row td {
+  font-size: 12px;
+  font-style: italic;
+  color: #2f2f2f;
+  background: rgba(255, 255, 255, 0.35);
 }
 
 .doom-bc.sheet .trait-name-button {
