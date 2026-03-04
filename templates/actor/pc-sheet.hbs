@@ -18,17 +18,25 @@
 
   <section class="sheet-body">
     <div class="tab" data-group="primary" data-tab="main">
-      <section class="identity-grid">
-        {{#each identityFields as |field|}}
-          <label class="field">
-            <span>{{field.label}}</span>
-            <input type="text" name="system.identity.{{field.key}}" value="{{field.value}}" />
-          </label>
-        {{/each}}
+      <section class="identity-matrix">
+        <table class="sheet-table">
+          <tr>
+            <td><label>{{localize "DOOMBC.ActorName"}} <input type="text" name="name" value="{{actor.name}}" /></label></td>
+            <td><label>{{localize "DOOMBC.Identity.homeworld"}} <input type="text" name="system.identity.homeworld" value="{{system.identity.homeworld}}" /></label></td>
+          </tr>
+          <tr>
+            <td><label>{{localize "DOOMBC.Identity.background"}} <input type="text" name="system.identity.race" value="{{system.identity.race}}" /></label></td>
+            <td><label>{{localize "DOOMBC.Identity.role"}} <input type="text" name="system.identity.subrace" value="{{system.identity.subrace}}" /></label></td>
+          </tr>
+          <tr>
+            <td><label>{{localize "DOOMBC.Identity.elite"}} <input type="text" name="system.identity.archetype" value="{{system.identity.archetype}}" /></label></td>
+            <td><label>{{localize "DOOMBC.Identity.divination"}} <input type="text" name="system.identity.eliteArchetype" value="{{system.identity.eliteArchetype}}" /></label></td>
+          </tr>
+        </table>
       </section>
 
-      <section class="main-layout-grid">
-        <section class="main-left">
+      <section class="layout-top-grid">
+        <section class="sheet-panel panel-characteristics">
           <h2>{{localize "DOOMBC.Characteristics.title"}}</h2>
           <table class="characteristics-table">
             <thead>
@@ -45,15 +53,7 @@
             <tbody>
               {{#each characteristics as |char|}}
                 <tr data-characteristic="{{char.key}}">
-                  <td>
-                    <button
-                      type="button"
-                      class="char-roll-button"
-                      data-action="roll-characteristic"
-                      data-characteristic="{{char.key}}">
-                      {{char.shortLabel}}
-                    </button>
-                  </td>
+                  <td><button type="button" class="char-roll-button" data-action="roll-characteristic" data-characteristic="{{char.key}}">{{char.shortLabel}}</button></td>
                   <td><input type="number" name="system.characteristics.{{char.key}}.initial" value="{{char.initial}}" min="0" max="100" data-char-field="initial" /></td>
                   <td><input type="number" name="system.characteristics.{{char.key}}.advances" value="{{char.advances}}" min="0" max="100" data-char-field="advances" /></td>
                   <td><input type="number" name="system.characteristics.{{char.key}}.modifier" value="{{char.modifier}}" min="-100" max="100" data-char-field="modifier" /></td>
@@ -66,135 +66,122 @@
           </table>
         </section>
 
-        <section class="main-right">
-          <section class="sheet-panel">
-            <div class="panel-header">
-              <h2>Traits</h2>
-              {{#if hasOwner}}
-                <button type="button" data-action="create-item" data-item-type="trait">+</button>
-              {{/if}}
-            </div>
-            <table class="compact-table">
-              <thead>
-                <tr><th>Name</th><th>Level</th><th></th></tr>
-              </thead>
-              <tbody>
-                {{#if traitItems.length}}
-                  {{#each traitItems as |trait|}}
-                    <tr>
-                      <td>{{trait.name}}</td>
-                      <td>{{trait.system.level}}</td>
-                      <td class="actions-cell">
-                        <button type="button" data-action="edit-item" data-item-id="{{trait.id}}">Edit</button>
-                        <button type="button" data-action="delete-item" data-item-id="{{trait.id}}">Del</button>
-                      </td>
-                    </tr>
-                  {{/each}}
-                {{else}}
-                  <tr><td colspan="3">No traits</td></tr>
-                {{/if}}
-              </tbody>
-            </table>
-          </section>
-
-          <section class="sheet-panel">
-            <h2>Basic Skills</h2>
-            <table class="compact-table">
-              <thead>
-                <tr><th>Name</th><th>Adv.</th><th>Char.</th><th>Total</th></tr>
-              </thead>
-              <tbody>
-                {{#each basicSkills as |skill|}}
+        <section class="sheet-panel panel-traits">
+          <div class="panel-header">
+            <h2>Traits</h2>
+            {{#if hasOwner}}<button type="button" data-action="create-item" data-item-type="trait">+</button>{{/if}}
+          </div>
+          <table class="compact-table">
+            <thead>
+              <tr><th>Name</th><th>Level</th><th></th></tr>
+            </thead>
+            <tbody>
+              {{#if traitItems.length}}
+                {{#each traitItems as |trait|}}
                   <tr>
-                    <td>
-                      {{skill.name}}
-                      <input type="hidden" name="system.skills.basic.{{skill.index}}.name" value="{{skill.name}}" />
+                    <td>{{trait.name}}</td>
+                    <td>{{trait.system.level}}</td>
+                    <td class="actions-cell">
+                      <button type="button" data-action="edit-item" data-item-id="{{trait.id}}">Edit</button>
+                      <button type="button" data-action="delete-item" data-item-id="{{trait.id}}">Del</button>
                     </td>
-                    <td><input type="number" name="system.skills.basic.{{skill.index}}.advances" value="{{skill.advances}}" min="0" /></td>
-                    <td>
-                      <select name="system.skills.basic.{{skill.index}}.characteristic">
-                        {{selectOptions @root.characteristicOptions selected=skill.characteristic nameAttr="key" labelAttr="label"}}
-                      </select>
-                    </td>
-                    <td><input type="number" value="{{skill.total}}" readonly /></td>
                   </tr>
                 {{/each}}
-              </tbody>
-            </table>
-          </section>
-
-          <section class="sheet-panel">
-            <h2>Specialist Skills</h2>
-            {{#each specialistCategories as |cat|}}
-              <div class="specialist-group">
-                <div class="panel-header">
-                  <h3>{{cat.label}}</h3>
-                  {{#if @root.hasOwner}}
-                    <button type="button" data-action="add-specialist-skill" data-category="{{cat.key}}">+</button>
-                  {{/if}}
-                </div>
-                <table class="compact-table">
-                  <thead>
-                    <tr><th>Name</th><th>Adv.</th><th>Char.</th><th>Total</th><th></th></tr>
-                  </thead>
-                  <tbody>
-                    {{#if cat.entries.length}}
-                      {{#each cat.entries as |entry|}}
-                        <tr>
-                          <td><input type="text" name="system.skills.specialistGroups.{{cat.key}}.{{entry.index}}.name" value="{{entry.name}}" /></td>
-                          <td><input type="number" name="system.skills.specialistGroups.{{cat.key}}.{{entry.index}}.advances" value="{{entry.advances}}" min="0" /></td>
-                          <td>
-                            <select name="system.skills.specialistGroups.{{cat.key}}.{{entry.index}}.characteristic">
-                              {{selectOptions @root.characteristicOptions selected=entry.characteristic nameAttr="key" labelAttr="label"}}
-                            </select>
-                          </td>
-                          <td><input type="number" value="{{entry.total}}" readonly /></td>
-                          <td>
-                            {{#if @root.hasOwner}}
-                              <button type="button" data-action="remove-specialist-skill" data-category="{{cat.key}}" data-index="{{entry.index}}">Del</button>
-                            {{/if}}
-                          </td>
-                        </tr>
-                      {{/each}}
-                    {{else}}
-                      <tr><td colspan="5">No entries</td></tr>
-                    {{/if}}
-                  </tbody>
-                </table>
-              </div>
-            {{/each}}
-          </section>
+              {{else}}
+                <tr><td colspan="3">No traits</td></tr>
+              {{/if}}
+            </tbody>
+          </table>
         </section>
       </section>
 
-      <section class="sheet-panel talents-panel">
-        <div class="panel-header">
-          <h2>Talents</h2>
-          {{#if hasOwner}}
-            <button type="button" data-action="create-item" data-item-type="talent">+</button>
-          {{/if}}
-        </div>
-        <table class="compact-table">
-          <thead>
-            <tr><th>Name</th><th>Tier</th><th></th></tr>
-          </thead>
-          <tbody>
-            {{#if talentItems.length}}
-              {{#each talentItems as |talent|}}
+      <section class="layout-bottom-grid">
+        <section class="sheet-panel panel-talents">
+          <div class="panel-header">
+            <h2>Talents</h2>
+            {{#if hasOwner}}<button type="button" data-action="create-item" data-item-type="talent">+</button>{{/if}}
+          </div>
+          <table class="compact-table">
+            <thead>
+              <tr><th>Name</th><th>Tier</th><th></th></tr>
+            </thead>
+            <tbody>
+              {{#if talentItems.length}}
+                {{#each talentItems as |talent|}}
+                  <tr>
+                    <td>{{talent.name}}</td>
+                    <td>{{talent.system.tier}}</td>
+                    <td class="actions-cell">
+                      <button type="button" data-action="edit-item" data-item-id="{{talent.id}}">Edit</button>
+                      <button type="button" data-action="delete-item" data-item-id="{{talent.id}}">Del</button>
+                    </td>
+                  </tr>
+                {{/each}}
+              {{else}}
+                <tr><td colspan="3">No talents</td></tr>
+              {{/if}}
+            </tbody>
+          </table>
+        </section>
+
+        <section class="sheet-panel panel-basic-skills">
+          <h2>Basic Skills</h2>
+          <table class="compact-table">
+            <thead>
+              <tr><th>Name</th><th>Adv.</th><th>Char.</th><th>Total</th></tr>
+            </thead>
+            <tbody>
+              {{#each basicSkills as |skill|}}
                 <tr>
-                  <td>{{talent.name}}</td>
-                  <td>{{talent.system.tier}}</td>
-                  <td class="actions-cell">
-                    <button type="button" data-action="edit-item" data-item-id="{{talent.id}}">Edit</button>
-                    <button type="button" data-action="delete-item" data-item-id="{{talent.id}}">Del</button>
+                  <td>{{skill.name}}<input type="hidden" name="system.skills.basic.{{skill.index}}.name" value="{{skill.name}}" /></td>
+                  <td><input type="number" name="system.skills.basic.{{skill.index}}.advances" value="{{skill.advances}}" min="0" /></td>
+                  <td>
+                    <select name="system.skills.basic.{{skill.index}}.characteristic">
+                      {{selectOptions @root.characteristicOptions selected=skill.characteristic nameAttr="key" labelAttr="label"}}
+                    </select>
                   </td>
+                  <td><input type="number" value="{{skill.total}}" readonly /></td>
                 </tr>
               {{/each}}
-            {{else}}
-              <tr><td colspan="3">No talents</td></tr>
-            {{/if}}
-          </tbody>
-        </table>
+            </tbody>
+          </table>
+        </section>
+
+        <section class="sheet-panel panel-specialist-skills">
+          <h2>Specialist Skills</h2>
+          {{#each specialistCategories as |cat|}}
+            <div class="specialist-group">
+              <div class="panel-header">
+                <h3>{{cat.label}}</h3>
+                {{#if @root.hasOwner}}<button type="button" data-action="add-specialist-skill" data-category="{{cat.key}}">+</button>{{/if}}
+              </div>
+              <table class="compact-table">
+                <thead>
+                  <tr><th>Name</th><th>Adv.</th><th>Char.</th><th>Total</th><th></th></tr>
+                </thead>
+                <tbody>
+                  {{#if cat.entries.length}}
+                    {{#each cat.entries as |entry|}}
+                      <tr>
+                        <td><input type="text" name="system.skills.specialistGroups.{{cat.key}}.{{entry.index}}.name" value="{{entry.name}}" /></td>
+                        <td><input type="number" name="system.skills.specialistGroups.{{cat.key}}.{{entry.index}}.advances" value="{{entry.advances}}" min="0" /></td>
+                        <td>
+                          <select name="system.skills.specialistGroups.{{cat.key}}.{{entry.index}}.characteristic">
+                            {{selectOptions @root.characteristicOptions selected=entry.characteristic nameAttr="key" labelAttr="label"}}
+                          </select>
+                        </td>
+                        <td><input type="number" value="{{entry.total}}" readonly /></td>
+                        <td>{{#if @root.hasOwner}}<button type="button" data-action="remove-specialist-skill" data-category="{{cat.key}}" data-index="{{entry.index}}">Del</button>{{/if}}</td>
+                      </tr>
+                    {{/each}}
+                  {{else}}
+                    <tr><td colspan="5">No entries</td></tr>
+                  {{/if}}
+                </tbody>
+              </table>
+            </div>
+          {{/each}}
+        </section>
       </section>
     </div>
     <div class="tab" data-group="primary" data-tab="combat">

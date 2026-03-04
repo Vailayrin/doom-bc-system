@@ -1,7 +1,7 @@
 .doom-bc.sheet .sheet-header {
   display: flex;
   gap: 12px;
-  align-items: center;
+  align-items: flex-start;
   margin-bottom: 8px;
 }
 
@@ -16,42 +16,78 @@
   flex: 1;
 }
 
+.doom-bc.sheet .header-fields h1 {
+  margin: 0 0 6px;
+}
+
+.doom-bc.sheet .header-fields input[name="name"] {
+  font-size: 20px;
+  font-weight: 700;
+  border: 0;
+  border-bottom: 1px solid #4a4a4a;
+}
+
 .doom-bc.sheet .sheet-tabs {
   display: flex;
   gap: 8px;
-  border-bottom: 1px solid #777;
+  border-top: 2px solid #444;
+  border-bottom: 2px solid #444;
   margin-bottom: 8px;
-  padding-bottom: 6px;
+  padding: 6px 0;
 }
 
 .doom-bc.sheet .sheet-body {
   min-height: 220px;
 }
 
-.doom-bc.sheet .identity-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 8px 12px;
+.doom-bc.sheet .identity-matrix {
   margin-bottom: 12px;
 }
 
-.doom-bc.sheet .identity-grid .field {
+.doom-bc.sheet .sheet-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.doom-bc.sheet .sheet-table td {
+  border: 1px solid #555;
+  padding: 3px 8px;
+}
+
+.doom-bc.sheet .sheet-table label {
   display: flex;
-  flex-direction: column;
-  gap: 4px;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+  text-transform: uppercase;
 }
 
-.doom-bc.sheet .main-layout-grid {
+.doom-bc.sheet .sheet-table input {
+  flex: 1;
+  border: 0;
+  background: transparent;
+}
+
+.doom-bc.sheet .layout-top-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+  grid-template-columns: 2.2fr 1fr;
   gap: 12px;
-  align-items: start;
+  margin-bottom: 12px;
 }
 
-.doom-bc.sheet .main-left h2,
+.doom-bc.sheet .layout-bottom-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 12px;
+}
+
 .doom-bc.sheet .sheet-panel h2 {
-  margin: 0 0 8px;
-  font-size: 16px;
+  margin: 0;
+  font-size: 28px;
+  line-height: 1;
+  text-align: center;
+  font-weight: 700;
+  font-family: "Times New Roman", serif;
 }
 
 .doom-bc.sheet .characteristics-table {
@@ -61,8 +97,8 @@
 
 .doom-bc.sheet .characteristics-table th,
 .doom-bc.sheet .characteristics-table td {
-  padding: 6px;
-  border: 1px solid #666;
+  padding: 2px 4px;
+  border: 1px solid #4e4e4e;
   text-align: center;
 }
 
@@ -72,28 +108,25 @@
 
 .doom-bc.sheet .characteristics-table input[type="number"] {
   width: 100%;
+  min-width: 48px;
 }
 
 .doom-bc.sheet .char-roll-button {
   min-width: 54px;
-}
-
-.doom-bc.sheet .main-right {
-  display: grid;
-  gap: 12px;
+  font-weight: 700;
 }
 
 .doom-bc.sheet .sheet-panel {
-  border: 1px solid #666;
-  padding: 8px;
-  background: rgba(255, 255, 255, 0.5);
+  border: 1px solid #444;
+  padding: 6px;
+  background: rgba(255, 255, 255, 0.4);
 }
 
 .doom-bc.sheet .panel-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 6px;
+  margin-bottom: 4px;
 }
 
 .doom-bc.sheet .panel-header h2,
@@ -108,8 +141,9 @@
 
 .doom-bc.sheet .compact-table th,
 .doom-bc.sheet .compact-table td {
-  border: 1px solid #666;
-  padding: 4px;
+  border: 1px solid #4e4e4e;
+  padding: 2px 4px;
+  font-size: 14px;
 }
 
 .doom-bc.sheet .compact-table td input,
@@ -122,19 +156,15 @@
 }
 
 .doom-bc.sheet .specialist-group + .specialist-group {
-  margin-top: 10px;
-}
-
-.doom-bc.sheet .talents-panel {
-  margin-top: 12px;
+  margin-top: 6px;
 }
 
 @media (max-width: 960px) {
-  .doom-bc.sheet .identity-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+  .doom-bc.sheet .layout-top-grid {
+    grid-template-columns: 1fr;
   }
 
-  .doom-bc.sheet .main-layout-grid {
+  .doom-bc.sheet .layout-bottom-grid {
     grid-template-columns: 1fr;
   }
 }
