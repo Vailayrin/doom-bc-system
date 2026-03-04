@@ -75,5 +75,9 @@
   "DOOMBC.Roll.placeholder.extended": "Плейсхолдер расширенного теста.",
   "DOOMBC.Roll.placeholder.combined": "Плейсхолдер комбинированного теста.",
   "DOOMBC.Roll.placeholder.damage": "Плейсхолдер броска урона.",
-  "DOOMBC.Roll.placeholder.psychic": "Плейсхолдер психосилы."
+  "DOOMBC.Roll.placeholder.psychic": "Плейсхолдер психосилы.",
+  "DOOMBC.Identity.background": "?????????????",
+  "DOOMBC.Identity.role": "????",
+  "DOOMBC.Identity.elite": "?????",
+  "DOOMBC.Identity.divination": "??????????"
 }

@@ -13,13 +13,10 @@ const CHARACTERISTICS = [
 
 const IDENTITY_FIELDS = [
   { key: "homeworld", i18nKey: "DOOMBC.Identity.homeworld" },
-  { key: "race", i18nKey: "DOOMBC.Identity.race" },
-  { key: "subrace", i18nKey: "DOOMBC.Identity.subrace" },
-  { key: "archetype", i18nKey: "DOOMBC.Identity.archetype" },
-  { key: "eliteArchetype", i18nKey: "DOOMBC.Identity.eliteArchetype" },
-  { key: "pride", i18nKey: "DOOMBC.Identity.pride" },
-  { key: "motivation", i18nKey: "DOOMBC.Identity.motivation" },
-  { key: "shame", i18nKey: "DOOMBC.Identity.shame" }
+  { key: "race", i18nKey: "DOOMBC.Identity.background" },
+  { key: "subrace", i18nKey: "DOOMBC.Identity.role" },
+  { key: "archetype", i18nKey: "DOOMBC.Identity.elite" },
+  { key: "eliteArchetype", i18nKey: "DOOMBC.Identity.divination" }
 ];
 
 const TEST_TYPES = [
@@ -27,6 +24,22 @@ const TEST_TYPES = [
   { value: "opposed", i18nKey: "DOOMBC.Roll.type.opposed" },
   { value: "extended", i18nKey: "DOOMBC.Roll.type.extended" },
   { value: "combined", i18nKey: "DOOMBC.Roll.type.combined" }
+];
+
+const BASIC_SKILL_NAMES = [
+  "Acrobatics", "Athletics", "Awareness", "Charm", "Command", "Commerce", "Deceive",
+  "Dodge", "Inquiry", "Interrogation", "Intimidate", "Logic", "Medicae", "Parry",
+  "Psyniscience", "Scrutiny", "Security", "Sleight of Hand", "Stealth", "Survival", "Tech Use"
+];
+
+const SPECIALIST_CATEGORY_META = [
+  { key: "commonLore", label: "Common Lore" },
+  { key: "forbiddenLore", label: "Forbidden Lore" },
+  { key: "linguistics", label: "Linguistics" },
+  { key: "navigate", label: "Navigate" },
+  { key: "operate", label: "Operate" },
+  { key: "scholasticLore", label: "Scholastic Lore" },
+  { key: "trade", label: "Trade" }
 ];
 
 function toInt(value, fallback = 0) {
@@ -70,6 +83,11 @@ function buildDifficultyOptions() {
     options.push({ value, label: difficultyLabel(value) });
   }
   return options;
+}
+
+function skillTotal(characteristicsByKey, characteristicKey, advances) {
+  const charCurrent = characteristicsByKey[characteristicKey]?.current ?? 0;
+  return clampInt(charCurrent + (toInt(advances, 0) * 10), 0, 200);
 }
 
 export class DoomBCActorSheet extends ActorSheet {
@@ -116,6 +134,44 @@ export class DoomBCActorSheet extends ActorSheet {
         ...derived
       };
     });
+
+    const characteristicsByKey = {};
+    for (const characteristic of data.characteristics) characteristicsByKey[characteristic.key] = characteristic;
+
+    const basicSkillMap = new Map((data.system.skills?.basic ?? []).map((entry) => [entry?.name, entry]));
+    data.basicSkills = BASIC_SKILL_NAMES.map((name, index) => {
+      const stored = basicSkillMap.get(name) ?? {};
+      const characteristic = CHARACTERISTICS.some((charData) => charData.key === stored.characteristic) ? stored.characteristic : "ag";
+      const advances = Math.max(toInt(stored.advances ?? 0, 0), 0);
+      return {
+        index,
+        name,
+        characteristic,
+        advances,
+        total: skillTotal(characteristicsByKey, characteristic, advances)
+      };
+    });
+
+    data.specialistCategories = SPECIALIST_CATEGORY_META.map((category) => {
+      const entries = (data.system.skills?.specialistGroups?.[category.key] ?? []).map((entry, index) => {
+        const skillName = String(entry?.name ?? "").trim();
+        const characteristic = CHARACTERISTICS.some((charData) => charData.key === entry?.characteristic) ? entry.characteristic : "int";
+        const advances = Math.max(toInt(entry?.advances ?? 0, 0), 0);
+        return {
+          index,
+          name: skillName,
+          characteristic,
+          advances,
+          total: skillTotal(characteristicsByKey, characteristic, advances)
+        };
+      });
+      return { ...category, entries };
+    });
+
+    data.characteristicOptions = CHARACTERISTICS.map((charData) => ({ key: charData.key, label: charData.shortLabel }));
+    data.traitItems = this.actor.items.filter((item) => item.type === "trait").sort((a, b) => a.name.localeCompare(b.name));
+    data.talentItems = this.actor.items.filter((item) => item.type === "talent").sort((a, b) => a.name.localeCompare(b.name));
+    data.hasOwner = this.actor.isOwner;
     return data;
   }
 
@@ -123,6 +179,11 @@ export class DoomBCActorSheet extends ActorSheet {
     super.activateListeners(html);
     html.find("[data-action='roll-characteristic']").on("click", this._onCharacteristicRoll.bind(this));
     html.find(".characteristics-table input[data-char-field]").on("input", this._onCharacteristicFieldInput.bind(this));
+    html.find("[data-action='create-item']").on("click", this._onCreateItem.bind(this));
+    html.find("[data-action='edit-item']").on("click", this._onEditItem.bind(this));
+    html.find("[data-action='delete-item']").on("click", this._onDeleteItem.bind(this));
+    html.find("[data-action='add-specialist-skill']").on("click", this._onAddSpecialistSkill.bind(this));
+    html.find("[data-action='remove-specialist-skill']").on("click", this._onRemoveSpecialistSkill.bind(this));
   }
 
   async _updateObject(_event, formData) {
@@ -165,6 +226,49 @@ export class DoomBCActorSheet extends ActorSheet {
     const bonus = row.querySelector("input[data-derived='bonus']");
     if (current) current.value = String(derived.current);
     if (bonus) bonus.value = String(derived.bonus);
+  }
+
+  async _onCreateItem(event) {
+    event.preventDefault();
+    const itemType = String(event.currentTarget.dataset.itemType ?? "").trim();
+    if (!["trait", "talent"].includes(itemType)) return;
+    const itemName = itemType === "trait" ? "New Trait" : "New Talent";
+    const item = await this.actor.createEmbeddedDocuments("Item", [{ name: itemName, type: itemType }]);
+    item[0]?.sheet?.render(true);
+  }
+
+  _onEditItem(event) {
+    event.preventDefault();
+    const itemId = event.currentTarget.dataset.itemId;
+    const item = this.actor.items.get(itemId);
+    item?.sheet?.render(true);
+  }
+
+  async _onDeleteItem(event) {
+    event.preventDefault();
+    const itemId = event.currentTarget.dataset.itemId;
+    if (!itemId) return;
+    await this.actor.deleteEmbeddedDocuments("Item", [itemId]);
+  }
+
+  async _onAddSpecialistSkill(event) {
+    event.preventDefault();
+    const category = event.currentTarget.dataset.category;
+    if (!SPECIALIST_CATEGORY_META.some((meta) => meta.key === category)) return;
+    const current = foundry.utils.deepClone(this.actor.system.skills?.specialistGroups?.[category] ?? []);
+    current.push({ name: "", advances: 0, characteristic: "int" });
+    await this.actor.update({ [`system.skills.specialistGroups.${category}`]: current });
+  }
+
+  async _onRemoveSpecialistSkill(event) {
+    event.preventDefault();
+    const category = event.currentTarget.dataset.category;
+    const index = toInt(event.currentTarget.dataset.index, -1);
+    if (!SPECIALIST_CATEGORY_META.some((meta) => meta.key === category) || index < 0) return;
+    const current = foundry.utils.deepClone(this.actor.system.skills?.specialistGroups?.[category] ?? []);
+    if (index >= current.length) return;
+    current.splice(index, 1);
+    await this.actor.update({ [`system.skills.specialistGroups.${category}`]: current });
   }
 
   async _onCharacteristicRoll(event) {

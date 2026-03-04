@@ -30,8 +30,9 @@
 
 .doom-bc.sheet .identity-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 8px 12px;
+  margin-bottom: 12px;
 }
 
 .doom-bc.sheet .identity-grid .field {
@@ -40,15 +41,15 @@
   gap: 4px;
 }
 
-.doom-bc.sheet .identity-grid .field-wide {
-  grid-column: 1 / -1;
+.doom-bc.sheet .main-layout-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+  gap: 12px;
+  align-items: start;
 }
 
-.doom-bc.sheet .characteristics-section {
-  margin-top: 14px;
-}
-
-.doom-bc.sheet .characteristics-section h2 {
+.doom-bc.sheet .main-left h2,
+.doom-bc.sheet .sheet-panel h2 {
   margin: 0 0 8px;
   font-size: 16px;
 }
@@ -66,8 +67,7 @@
 }
 
 .doom-bc.sheet .characteristics-table td:first-child {
-  text-align: left;
-  min-width: 190px;
+  min-width: 68px;
 }
 
 .doom-bc.sheet .characteristics-table input[type="number"] {
@@ -75,13 +75,68 @@
 }
 
 .doom-bc.sheet .char-roll-button {
-  min-width: 48px;
-  margin-right: 8px;
+  min-width: 54px;
 }
 
-.doom-bc.sheet .char-long-name {
-  font-size: 12px;
-  opacity: 0.8;
+.doom-bc.sheet .main-right {
+  display: grid;
+  gap: 12px;
+}
+
+.doom-bc.sheet .sheet-panel {
+  border: 1px solid #666;
+  padding: 8px;
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.doom-bc.sheet .panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.doom-bc.sheet .panel-header h2,
+.doom-bc.sheet .panel-header h3 {
+  margin: 0;
+}
+
+.doom-bc.sheet .compact-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.doom-bc.sheet .compact-table th,
+.doom-bc.sheet .compact-table td {
+  border: 1px solid #666;
+  padding: 4px;
+}
+
+.doom-bc.sheet .compact-table td input,
+.doom-bc.sheet .compact-table td select {
+  width: 100%;
+}
+
+.doom-bc.sheet .actions-cell {
+  white-space: nowrap;
+}
+
+.doom-bc.sheet .specialist-group + .specialist-group {
+  margin-top: 10px;
+}
+
+.doom-bc.sheet .talents-panel {
+  margin-top: 12px;
+}
+
+@media (max-width: 960px) {
+  .doom-bc.sheet .identity-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .doom-bc.sheet .main-layout-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 .doom-bc-roll-card {
