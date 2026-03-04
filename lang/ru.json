@@ -40,7 +40,7 @@
   "DOOMBC.Roll.dialogTitle": "Проверка характеристики",
   "DOOMBC.Roll.testSuffix": "Тест",
   "DOOMBC.Roll.testName": "Название теста",
-  "DOOMBC.Roll.difficulty": "Сложность",
+  "DOOMBC.Roll.difficultyLabel": "Сложность",
   "DOOMBC.Roll.customModifier": "Кастомный модификатор",
   "DOOMBC.Roll.testType": "Тип теста",
   "DOOMBC.Roll.button": "Бросить",

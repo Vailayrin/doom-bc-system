@@ -100,28 +100,31 @@ Hooks.once("ready", async () => {
   }
 });
 
-Hooks.on("renderChatMessage", (_message, html) => {
-  html.find(".doom-bc-reroll").on("click", async (event) => {
+Hooks.on("renderChatMessageHTML", (_message, html) => {
+  const buttons = html.querySelectorAll(".doom-bc-reroll");
+  for (const button of buttons) {
+    button.addEventListener("click", async (event) => {
     event.preventDefault();
-    const button = event.currentTarget;
-    const actorId = button.dataset.actorId;
-    const characteristicKey = button.dataset.characteristic;
-    const testName = button.dataset.testName ?? "Characteristic Test";
-    const finalModifier = Number.parseInt(button.dataset.finalModifier ?? "0", 10) || 0;
+      const targetButton = event.currentTarget;
+      const actorId = targetButton.dataset.actorId;
+      const characteristicKey = targetButton.dataset.characteristic;
+      const testName = targetButton.dataset.testName ?? "Characteristic Test";
+      const finalModifier = Number.parseInt(targetButton.dataset.finalModifier ?? "0", 10) || 0;
 
-    const actor = game.actors.get(actorId);
-    if (!actor) {
-      ui.notifications?.warn(game.i18n.localize("DOOMBC.Roll.actorMissing"));
-      return;
-    }
+      const actor = game.actors.get(actorId);
+      if (!actor) {
+        ui.notifications?.warn(game.i18n.localize("DOOMBC.Roll.actorMissing"));
+        return;
+      }
 
-    await DoomBCActorSheet.rollCharacteristicTest({
-      actor,
-      characteristicKey,
-      testName,
-      finalModifier,
-      isReroll: true,
-      canReroll: false
+      await DoomBCActorSheet.rollCharacteristicTest({
+        actor,
+        characteristicKey,
+        testName,
+        finalModifier,
+        isReroll: true,
+        canReroll: false
+      });
     });
-  });
+  }
 });

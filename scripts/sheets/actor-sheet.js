@@ -189,7 +189,7 @@ export class DoomBCActorSheet extends ActorSheet {
           <input type="text" name="testName" value="${defaultName}" />
         </div>
         <div class="form-group">
-          <label>${game.i18n.localize("DOOMBC.Roll.difficulty")}</label>
+          <label>${game.i18n.localize("DOOMBC.Roll.difficultyLabel")}</label>
           <select name="difficulty">${difficultyHtml}</select>
         </div>
         <div class="form-group">

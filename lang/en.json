@@ -40,7 +40,7 @@
   "DOOMBC.Roll.dialogTitle": "Characteristic Test",
   "DOOMBC.Roll.testSuffix": "Test",
   "DOOMBC.Roll.testName": "Test Name",
-  "DOOMBC.Roll.difficulty": "Difficulty",
+  "DOOMBC.Roll.difficultyLabel": "Difficulty",
   "DOOMBC.Roll.customModifier": "Custom Modifier",
   "DOOMBC.Roll.testType": "Test Type",
   "DOOMBC.Roll.button": "Roll",
