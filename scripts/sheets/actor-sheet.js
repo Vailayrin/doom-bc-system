@@ -85,12 +85,12 @@ export class DoomBCActorSheet extends ActorSheet {
   get template() {
     switch (this.actor.type) {
       case "npc":
-        return "templates/actor/npc-sheet.hbs";
+        return "systems/doom-bc-system/templates/actor/npc-sheet.hbs";
       case "vehicle":
-        return "templates/actor/vehicle-sheet.hbs";
+        return "systems/doom-bc-system/templates/actor/vehicle-sheet.hbs";
       case "pc":
       default:
-        return "templates/actor/pc-sheet.hbs";
+        return "systems/doom-bc-system/templates/actor/pc-sheet.hbs";
     }
   }
 

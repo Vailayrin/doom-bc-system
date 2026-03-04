@@ -8,7 +8,7 @@ export class DoomBCItemSheet extends ItemSheet {
   }
 
   get template() {
-    return "templates/item/item-sheet.hbs";
+    return "systems/doom-bc-system/templates/item/item-sheet.hbs";
   }
 
   async getData(options) {
